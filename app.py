@@ -120,7 +120,7 @@ for key in ["step1_done", "step2_done", "step3_done", "out1", "out2", "out3"]:
 # ─────────────────────────────────────────
 def run_step(step_num: int) -> str:
     res = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5.2",
         temperature=0.3,
         messages=[
             {"role": "system", "content": SYSTEM_BASE},
