@@ -165,10 +165,16 @@ for key in ["step1_done", "step2_done", "step3_done", "out1", "out2", "out3"]:
 #  ヘルパー
 # ─────────────────────────────────────────
 def render_text(text: str) -> str:
-    """テキストの \n を <br> に変換してHTMLで表示できるようにする"""
+    """テキストの \n を <br> に変換し、①②③ で始まる行を太字にする"""
     import html as html_lib
-    escaped = html_lib.escape(text)
-    return escaped.replace("\n\n", "</p><p style=\'margin:0.6rem 0 0 0\'>").replace("\n", "<br>")
+    lines = text.split("\n")
+    result = []
+    for line in lines:
+        escaped = html_lib.escape(line)
+        if escaped and escaped[0] in "①②③":
+            escaped = f"<strong>{escaped}</strong>"
+        result.append(escaped)
+    return "<br>".join(result)
 
 def run_step(step_num: int) -> str:
     if PROMPTS[step_num] is None:
