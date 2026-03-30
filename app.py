@@ -98,16 +98,18 @@ PROMPTS = {
     1: (
         "このカフェ出店ケースについて、以下の形式で厳密に出力してください。\n"
         "マークダウン記号（*、-、#）は一切使わないでください。\n"
-        "各見出しの直後は改行して即箇条書きを始め、見出しと箇条書きの間に空行を入れないでください。\n\n"
+        "見出しと箇条書きの間に空行を入れず、各項目（①②③）の間には必ず1行空行を入れてください。\n\n"
         "出力形式（この形式を必ず守ること）:\n"
         "①立地の強み\n"
         "・〇〇\n"
         "・〇〇\n"
-        "・〇〇\n\n"
+        "・〇〇\n"
+        "\n"
         "②競合の状況\n"
         "・〇〇\n"
         "・〇〇\n"
-        "・〇〇\n\n"
+        "・〇〇\n"
+        "\n"
         "③ターゲット顧客\n"
         "・〇〇\n"
         "・〇〇\n"
@@ -117,27 +119,40 @@ PROMPTS = {
     2: (
         "このカフェ出店ケースで『出店するかどうか』の判断ポイントを以下の形式で出力してください。\n"
         "マークダウン記号（*、-、#）は一切使わないでください。\n"
-        "見出しの直後に改行して説明文を書き、見出しと説明文の間に空行を入れないでください。\n\n"
+        "見出しと説明文の間に空行を入れず、各項目（①②③）の間には必ず1行空行を入れてください。\n\n"
         "出力形式（この形式を必ず守ること）:\n"
         "①収益性\n"
-        "〇〇〇〇〇（1〜2文で説明）\n\n"
+        "〇〇〇〇〇（1〜2文で説明）\n"
+        "\n"
         "②競合対応\n"
-        "〇〇〇〇〇（1〜2文で説明）\n\n"
+        "〇〇〇〇〇（1〜2文で説明）\n"
+        "\n"
         "③顧客獲得\n"
         "〇〇〇〇〇（1〜2文で説明）"
     ),
 
-    3: (
-        "このカフェ出店ケースで判断するために不足している情報を以下の形式で出力してください。\n"
-        "マークダウン記号（*、-、#）は一切使わないでください。\n\n"
-        "出力形式（この形式を必ず守ること）:\n"
-        "・〇〇（理由：〜）\n"
-        "・〇〇（理由：〜）\n"
-        "・〇〇（理由：〜）\n"
-        "・〇〇（理由：〜）\n"
-        "・〇〇（理由：〜）"
-    ),
+    3: None,  # 固定HTMLで表示
 }
+
+# ③ 足りない情報（固定HTML）
+STEP3_HTML = """
+<div class="ai-output">
+<p style="margin:0 0 0.8rem 0;"><strong>・想定顧客の利用目的と時間帯別の需要</strong><br>
+（理由：通勤客・学生・休日客で「朝のテイクアウト」「昼の滞在」「夕方の勉強」などニーズが異なり、提供価値と営業時間の最適化に直結するため）</p>
+
+<p style="margin:0 0 0.8rem 0;"><strong>・競合2店舗の強み・弱みと価格帯・混雑状況</strong><br>
+（理由：差別化ポイント（商品、席、回転、体験）と勝てる価格レンジ、狙うべき空白時間帯を決めるため）</p>
+
+<p style="margin:0 0 0.8rem 0;"><strong>・物件条件（賃料、面積、視認性、導線、席数上限、設備可否）</strong><br>
+（理由：固定費と売上上限が決まり、採算ラインと提供できる業態（テイクアウト中心/滞在型）が制約されるため）</p>
+
+<p style="margin:0 0 0.8rem 0;"><strong>・初期投資と資金計画（内装・厨房・什器、運転資金、回収期間の目標）</strong><br>
+（理由：投資回収の見通しが立たないと出店可否の判断ができず、資金ショートリスクも評価できないため）</p>
+
+<p style="margin:0;"><strong>・収益モデルの前提（客単価、回転率、来店数見込み、原価率、人件費率）</strong><br>
+（理由：人通りが多くても「入店率」と「利益率」が低いと成立しないため、損益分岐点を算出して判断する必要があるため）</p>
+</div>
+"""
 
 # ─────────────────────────────────────────
 #  セッション初期化
@@ -149,7 +164,15 @@ for key in ["step1_done", "step2_done", "step3_done", "out1", "out2", "out3"]:
 # ─────────────────────────────────────────
 #  ヘルパー
 # ─────────────────────────────────────────
+def render_text(text: str) -> str:
+    """テキストの \n を <br> に変換してHTMLで表示できるようにする"""
+    import html as html_lib
+    escaped = html_lib.escape(text)
+    return escaped.replace("\n\n", "</p><p style=\'margin:0.6rem 0 0 0\'>").replace("\n", "<br>")
+
 def run_step(step_num: int) -> str:
+    if PROMPTS[step_num] is None:
+        return ""
     res = client.chat.completions.create(
         model="gpt-5.2",
         temperature=0.3,
@@ -203,7 +226,8 @@ if st.button("▶ ① 状況を整理する", use_container_width=True):
         st.session_state.step1_done = True
 
 if st.session_state.step1_done:
-    st.markdown(f'<div class="ai-output">{st.session_state.out1}</div>',
+    rendered1 = f"<p style='margin:0'>{render_text(st.session_state.out1)}</p>"
+    st.markdown(f'<div class="ai-output" style="white-space:normal;">{rendered1}</div>',
                 unsafe_allow_html=True)
 
 st.markdown("")
@@ -220,7 +244,8 @@ else:
             st.session_state.step2_done = True
 
     if st.session_state.step2_done:
-        st.markdown(f'<div class="ai-output">{st.session_state.out2}</div>',
+        rendered2 = f"<p style='margin:0'>{render_text(st.session_state.out2)}</p>"
+        st.markdown(f'<div class="ai-output" style="white-space:normal;">{rendered2}</div>',
                     unsafe_allow_html=True)
 
 st.markdown("")
@@ -237,8 +262,7 @@ else:
             st.session_state.step3_done = True
 
     if st.session_state.step3_done:
-        st.markdown(f'<div class="ai-output">{st.session_state.out3}</div>',
-                    unsafe_allow_html=True)
+        st.markdown(STEP3_HTML, unsafe_allow_html=True)
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
