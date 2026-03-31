@@ -15,15 +15,15 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .nsep{width:1px;height:16px;background:#141c2c;}
 .nbread{font-size:9.5px;color:#8090a8;}
 .nbread strong{color:#b0bcd0;font-weight:500;}
-.toc-btn{display:flex;align-items:center;gap:5px;background:#0e1320;border:1px solid #141c2c;border-radius:6px;padding:4px 10px;font-size:9px;color:#3a4a60;cursor:pointer;transition:all .15s;}
+.toc-btn{display:flex;align-items:center;gap:5px;background:#0e1320;border:1px solid #141c2c;border-radius:6px;padding:4px 10px;font-size:9px;color:#fff;cursor:pointer;transition:all .15s;}
 .toc-btn:hover{border-color:#1e2d40;color:#6070a0;}
 .nav-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.vbadge{display:flex;align-items:center;gap:5px;background:#0c1a10;border:1px solid #162010;border-radius:20px;padding:4px 12px;cursor:pointer;}
+.vbadge{display:none;}
 .vdot{width:5px;height:5px;border-radius:50%;background:#6ee7b7;animation:vp 1.1s ease-in-out infinite;}
 .vdot.off{background:#1e2a1e;animation:none;}
 @keyframes vp{0%,100%{opacity:1}50%{opacity:.2}}
 .vtext{font-size:9px;color:#3a6040;font-weight:500;}
-.sbadge{font-size:9px;color:#2a3a50;background:#0c1018;border:1px solid #141c2c;border-radius:4px;padding:3px 9px;}
+.sbadge{display:none;}
 .sbadge strong{color:#4a5a70;}
 
 /* ── TOC ── */
@@ -53,17 +53,17 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
    LEFT PANEL
    スライド / メンタートリガー / バイブコーディングチャット
 ───────────────────────────── */
-.left{width:44%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#0a0d16;}
+.left{width:55%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#0a0d16;overflow:hidden;}
 
 /* スライド 16:9 */
-.slide-wrap{flex-shrink:0;background:#0d1120;}
+.slide-wrap{flex-shrink:0;display:flex;flex-direction:column;background:#0d1120;}
 .slide-ratio{width:100%;padding-top:56.25%;position:relative;}
 .slide-in{position:absolute;inset:0;padding:24px 30px;display:flex;flex-direction:column;justify-content:center;}
-.s-eye{font-size:8px;font-weight:700;color:#1e2d40;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.s-eye{font-size:8px;font-weight:700;color:#fff;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
 .s-h{font-size:20px;font-weight:800;color:#d8e4ff;font-family:'Syne',sans-serif;line-height:1.2;margin-bottom:10px;}
-.s-body{font-size:10px;color:#4a5a70;line-height:1.7;margin-bottom:12px;}
-.sel{border-radius:7px;padding:9px 12px;cursor:pointer;transition:all .15s;position:relative;margin-bottom:7px;}
-.scode{background:#07090f;border:1.5px dashed #1a2535;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3a7050;line-height:1.75;}
+.s-body{font-size:9px;color:#fff;line-height:1.5;margin-bottom:2px;}
+.sel{border-radius:7px;padding:6px 10px;cursor:pointer;transition:all .15s;position:relative;margin-bottom:3px;}
+.scode{background:#07090f;border:1.5px dashed #1a2535;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#fff;line-height:1.75;}
 .scode:hover{border-color:#6ee7b7;border-style:solid;background:#080f0a;}
 .sprompt{background:#0c1525;border:1.5px dashed #152030;}
 .sprompt:hover{border-color:#3a70c0;border-style:solid;}
@@ -71,13 +71,13 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .sel:hover .shint{opacity:1;}
 .scode .shint{background:#6ee7b7;color:#060a10;}
 .sprompt .shint{background:#3a70c0;color:#fff;}
-.spt{font-size:9.5px;color:#2a4a70;font-style:italic;}
-.kw{color:#b04040;}.str{color:#4a80b0;}.cm{color:#1e2d40;}
+.spt{font-size:9.5px;color:#fff;font-style:italic;}
+.kw{color:#b04040;}.str{color:#4a80b0;}.cm{color:#fff;}
 @keyframes cfl{0%{background:#0a200f}100%{background:#07090f}}
 .cflash{animation:cfl .35s ease-out;}
 
 /* スライドコントロール */
-.sctrl{height:0;overflow:hidden;border:none;padding:0;flex-shrink:0;}
+.sctrl{display:none;}
 .scbtn{background:none;border:1px solid #141c2c;border-radius:3px;width:18px;height:18px;color:#2a3a50;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;}
 .scbtn:hover{color:#6070a0;border-color:#1e2d40;}
 .scnum{font-size:8px;color:#1e2d40;font-family:'IBM Plex Mono',monospace;}
@@ -147,7 +147,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 ───────────────────────────── */
 .bubble-wrap{
   position:absolute;
-  left:44%;
+  left:55%;
   width:340px;
   z-index:50;
   pointer-events:none;
@@ -257,8 +257,8 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 }
 .vh-icon{width:18px;height:18px;border-radius:5px;background:#0c1828;border:1.5px solid #1a3050;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#4a80d0;font-family:'Syne',sans-serif;}
 .vh-title{font-size:10px;font-weight:700;color:#c0cce0;}
-.vh-role{font-size:8px;color:#142030;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
-.vh-ctx{margin-left:auto;font-size:8px;color:#1a2a40;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
+.vh-role{font-size:8px;color:#fff;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
+.vh-ctx{display:none;}
 .chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 6px;display:flex;flex-direction:column;gap:7px;}
 .chat-msgs::-webkit-scrollbar{width:2px;}
 .chat-msgs::-webkit-scrollbar-thumb{background:#141c2c;}
@@ -267,7 +267,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .av-ai{background:#0c1828;color:#4a80d0;}
 .av-me{background:#0c1428;color:#4a6080;}
 .bub{padding:7px 10px;border-radius:7px;font-size:9.5px;line-height:1.6;max-width:88%;}
-.b-ai{background:#0d1322;border:1px solid #141c2c;border-top-left-radius:2px;color:#8090a8;}
+.b-ai{background:#0d1322;border:1px solid #141c2c;border-top-left-radius:2px;color:#fff;}
 .b-me{background:#0c1428;border:1px solid #121e38;color:#5a7090;border-top-right-radius:2px;}
 .mer{flex-direction:row-reverse;}
 .code-bub{background:#060a10;border:1px solid #141c2c;border-radius:5px;padding:7px 10px;margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4a8060;line-height:1.7;}
@@ -282,17 +282,17 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .inp-box{display:flex;gap:7px;align-items:flex-end;background:#0d1322;border:1.5px solid #141c2c;border-radius:10px;padding:8px 11px;transition:border-color .15s;}
 .inp-box:focus-within{border-color:#1a3050;}
 .chat-ta{flex:1;background:none;border:none;outline:none;font-size:10px;color:#8090a8;font-family:'Noto Sans KR',sans-serif;resize:none;max-height:72px;min-height:20px;line-height:1.5;}
-.chat-ta::placeholder{color:#1a2535;}
+.chat-ta::placeholder{color:#ccc;}
 .send-btn{width:28px;height:28px;background:#142040;border:none;border-radius:7px;color:#4a80d0;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;}
 .send-btn:hover{background:#2060d0;color:#fff;}
 .chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.chip{background:#0d1322;border:1px solid #141c2c;border-radius:4px;padding:2px 8px;font-size:8px;color:#1e2d3e;cursor:pointer;transition:all .12s;}
+.chip{background:#0d1322;border:1px solid #141c2c;border-radius:4px;padding:2px 8px;font-size:8px;color:#fff;cursor:pointer;transition:all .12s;}
 .chip:hover{border-color:#1a3050;color:#4a80d0;}
 
 /* ── RIGHT: IDE ── */
 .right{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0;}
 .ide-tabs{display:flex;background:#080c14;border-bottom:1px solid #141c2c;flex-shrink:0;}
-.ide-tab{padding:9px 16px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:#1e2d3e;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;}
+.ide-tab{padding:9px 16px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:#fff;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;}
 .ide-tab:hover{color:#3a4a60;}
 .ide-tab.ac{color:#d0daf0;border-bottom-color:#6ee7b7;}
 .ide-tab.badge{position:relative;}
@@ -301,17 +301,21 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .run-btn::before{content:'▶';font-size:7px;}
 .run-btn:hover{background:#142010;}
 .ide-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
-.code-area{flex:1;padding:16px 18px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.9;color:#a0b0c8;overflow-y:auto;}
+.code-area{flex:1;padding:16px 18px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.9;color:#fff;overflow-y:auto;}
 .code-area::-webkit-scrollbar{width:3px;}
 .code-area::-webkit-scrollbar-thumb{background:#141c2c;}
 @keyframes ifl{0%{background:rgba(110,231,183,.1)}100%{background:transparent}}
 .iflash{animation:ifl .7s ease-out;}
+.code-err{padding:8px 18px;font-size:9px;color:#ff4040;background:#1a0808;border-top:1px solid #3a1010;font-family:'IBM Plex Mono',monospace;line-height:1.6;display:none;}
+.code-err.show{display:block;}
+.fix-btn{display:inline-flex;align-items:center;gap:4px;margin-top:5px;background:#1a0c10;border:1px solid #d04040;border-radius:4px;padding:2px 8px;font-size:8px;color:#ff6060;cursor:pointer;font-weight:600;transition:all .15s;}
+.fix-btn:hover{background:#d04040;color:#fff;}
 .out-strip{border-top:1px solid #141c2c;background:#040608;flex-shrink:0;}
 .out-hd{height:26px;border-bottom:1px solid #141c2c;padding:0 14px;display:flex;align-items:center;gap:6px;}
 .out-dot{width:5px;height:5px;border-radius:50%;}
-.out-lbl{font-size:8.5px;color:#1a2535;font-family:'IBM Plex Mono',monospace;}
+.out-lbl{font-size:8.5px;color:#fff;font-family:'IBM Plex Mono',monospace;}
 .out-body{padding:10px 18px;min-height:40px;font-family:'IBM Plex Mono',monospace;font-size:10px;}
-.out-empty{color:#141c2c;font-style:italic;}
+.out-empty{color:#fff;font-style:italic;}
 .prev-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;}
 .mini-app{background:#f9fafb;border-radius:10px;width:80%;padding:16px 20px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
 .app-h{font-size:12px;font-weight:700;color:#111;margin-bottom:9px;}
@@ -330,7 +334,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 <div class="nav">
   <div class="brand">AI Talent<em>Lab</em></div>
   <div class="nsep"></div>
-  <div class="nbread">バイブコーディング ブートキャンプ · <strong>Week 2 · AI Agent実習</strong></div>
+  <div class="nbread">バイブコーディング ブートキャンプ · <strong>AI Agent実習</strong></div>
   <button class="toc-btn" onclick="toggleTOC()">☰ 目次</button>
   <div class="nav-r">
     <div class="vbadge" onclick="toggleVoice()">
@@ -349,7 +353,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
       <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">環境設定</div></div>
       <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">最初のプロンプト作成</div></div>
     </div>
-    <div><div class="toc-ch-t">Week 2 · AI Agent</div>
+    <div><div class="toc-ch-t">AI Agent</div>
       <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">Agentの概念理解</div></div>
       <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">簡単なAgent作成</div></div>
       <div class="toc-row on"><div class="ls la">▶</div><div class="toc-lname on">最初のコード実習</div></div>
@@ -369,22 +373,36 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
   <div class="left" id="leftPanel">
 
     <div class="slide-wrap">
-      <div class="slide-ratio">
-        <div class="slide-in">
-          <div class="s-eye">実習 1 · Week 2 · スライド 7</div>
-          <div class="s-h">最初のコード実習<br>AI Agentの始まり</div>
-          <div class="s-body">AIに自然語で指示するとコードを生成します。<br>下の要素をクリックしてチャットにすぐ反映させてみましょう。</div>
-          <div class="sel scode" id="cel" onclick="insertCode()">
-            <div class="shint">チャットへ →</div>
-            <div><span class="cm"># Hello, AI Agent!</span></div>
-            <div><span class="kw">print</span>(<span class="str">"Hello, AI Agent!"</span>)</div>
-          </div>
-          <div class="sel sprompt" onclick="insertPrompt()">
-            <div class="shint">チャットへ →</div>
-            <div class="spt">💬 「このコードを実行するとどうなる？」</div>
-          </div>
+
+      <!-- ① 動画エリア -->
+      <div style="background:#000;flex-shrink:0;">
+        <video
+          id="lessonVideo"
+          src="Lesson2_AI_Agent_1080p.mp4"
+          style="width:100%;height:calc((100vh - 44px) * 0.47);display:block;object-fit:contain;"
+          controls
+          controlsList="nodownload"
+          preload="metadata"
+          poster="https://resource2.heygen.ai/video/60b76969e1024a2ba5f81bb7b33d8897/vvVa0rcnI1bF3DK8R0EtZQBjbdu6e2QL6/gif.gif">
+        </video>
+      </div>
+
+      <!-- ② クリック要素（動画の下） -->
+      <div style="padding:6px 18px;display:flex;flex-direction:column;gap:4px;background:#0d1120;border-bottom:1px solid #141c2c;flex-shrink:0;">
+        <div class="s-body" style="margin-bottom:2px;">
+          下の要素をクリックしてチャットにすぐ反映させてみましょう。
+        </div>
+        <div class="sel scode" id="cel" onclick="insertCode()">
+          <div class="shint">チャットへ →</div>
+          <div><span class="cm"># Hello, AI Agent!</span></div>
+          <div><span class="kw">print</span>(<span class="str">"Hello, AI Agent!"</span>)</div>
+        </div>
+        <div class="sel sprompt" onclick="insertPrompt()">
+          <div class="shint">チャットへ →</div>
+          <div class="spt">💬 「このコードを実行するとどうなる？」</div>
         </div>
       </div>
+
     </div>
 
     <div class="sctrl">
@@ -425,7 +443,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
       <div class="chat-msgs" id="chatMsgs">
         <div class="msg">
           <div class="ava av-ai">AI</div>
-          <div class="b-ai bub">こんにちは！<br>コードの生成、実行、修正をお手伝いします。<br>左側のスライドをクリックするか、直接リクエストしてみてください。<br><span style="font-size:8.5px;color:#1e2d3e;display:block;margin-top:4px;">講義内容について知りたい場合はAIメンターに聞いてみてください → メンターバーの「質問する」</span></div>
+          <div class="b-ai bub">こんにちは！<br>コードの生成、実行、修正をお手伝いします。<br>左側のスライドをクリックするか、直接リクエストしてみてください。<br><span style="font-size:8.5px;color:#fff;display:block;margin-top:4px;">講義内容について知りたい場合はAIメンターに聞いてみてください → メンターバーの「質問する」</span></div>
         </div>
       </div>
       <div class="inp-area">
@@ -436,8 +454,8 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
         </div>
         <div class="chips">
           <div class="chip" onclick="si('Todoアプリ作って')">Todoアプリ作って</div>
-          <div class="chip" onclick="si('エラー直して')">エラー直して</div>
-          <div class="chip" onclick="si('コード説明して')">コード説明して</div>
+          <div class="chip" onclick="si('エラー修正')">エラー修正</div>
+          <div class="chip" onclick="si('コード説明')">コード説明</div>
         </div>
       </div>
     </div>
@@ -472,9 +490,10 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
       <button class="run-btn" onclick="runCode()">実行</button>
     </div>
     <div class="ide-body">
-      <div id="pCode" class="code-area">
-        <div style="color:#1a2535;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-style:italic;"># チャットでコードリクエスト後に自動反映されます<br><br>← チャットウィンドウでリクエストしてください</div>
+      <div id="pCode" class="code-area" contenteditable="true" spellcheck="false">
+        <div style="color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-style:italic;"># チャットでコードリクエスト後に自動反映されます<br><br>← チャットウィンドウでリクエストしてください</div>
       </div>
+      <div class="code-err" id="codeErr"></div>
       <div id="pResult" class="hidden" style="flex:1;display:flex;flex-direction:column;">
         <div class="out-strip" style="flex:1;">
           <div class="out-hd"><div class="out-dot" style="background:#1a2535;"></div><div class="out-lbl">実行前</div></div>
@@ -693,6 +712,32 @@ function sendChat(){
       reply="Hello, AI Agent! を出力するコードを作成しました。";
       code='print("Hello, AI Agent!")';
       hasNew=true;
+    } else if(v.includes('説明して')||v.includes('説明')){
+      const cur=document.getElementById('pCode').textContent.trim();
+      if(cur&&hasCode){
+        const pm=cur.match(/print\(["'](.+?)["']\)/);
+        if(pm){
+          reply=`<strong>コード説明：</strong><br><br><code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">print("${pm[1]}")</code><br><br><strong>print()</strong> はPythonの組み込み関数で、括弧内の値をコンソール（出力画面）に表示します。<br>ここでは文字列 <strong>"${pm[1]}"</strong> を画面に出力しています。<br><br>・<strong>print()</strong> — 出力関数<br>・<strong>" "</strong> で囲まれた部分 — 文字列（テキストデータ）`;
+        } else {
+          reply=`<strong>コード説明：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">${cur}</code><br><br>このコードはPythonで記述されています。実行すると結果が右側の「実行結果」タブに表示されます。`;
+        }
+      } else {
+        reply="まだコードがありません。スライドのコードをクリックするか、コードをリクエストしてから「コード説明」を試してみてください。";
+      }
+    } else if(v.includes('エラー')||v.includes('直して')){
+      const cur=document.getElementById('pCode').textContent.trim();
+      if(cur&&hasCode){
+        const chk=checkCode(cur);
+        if(!chk.ok){
+          const fixCode=chk.fix||'print("Hello, AI Agent!")';
+          const esc=fixCode.replace(/`/g,"'").replace(/"/g,'&quot;');
+          reply=`<strong>エラー検出：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#1a0808;padding:2px 5px;border-radius:3px;color:#ff6060;">${cur}</code><br><br>❌ <span style="color:#ff6060;">${chk.msg}</span><br><br><strong>修正後のコード：</strong><div class="code-bub" style="border-color:#22c55e;">${fixCode}</div><div class="fix-btn" onclick="applyIDE(\`${esc}\`);hideCodeError();">→ 修正を反映する</div>`;
+        } else {
+          reply=`<strong>エラーチェック結果：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">${cur}</code><br><br>✅ <strong>構文エラーはありません。</strong><br>コードは正常に実行可能です。`;
+        }
+      } else {
+        reply="まだコードがありません。まずはコードを作成してから「エラー修正」を試してみてください。";
+      }
     } else if(v.includes('Todo')){
       reply="簡単なTodoアプリの構造を作成しました。右側の「アプリプレビュー」を確認してください。";
       document.getElementById('tabPreview').classList.add('badge');
@@ -714,6 +759,7 @@ function sendChat(){
 /* ── IDE ── */
 function applyIDE(code){
   hasCode=true;
+  hideCodeError();
   const p=document.getElementById('pCode');
   p.innerHTML=code;
   p.classList.add('iflash');
@@ -730,6 +776,75 @@ function applyIDE(code){
   }
 }
 
+/* ── コード検証 ── */
+function extractText(code){
+  /* コードの中から意図した文字列部分を抽出する */
+  const m=code.match(/["']([^"']+)["']/);
+  if(m) return m[1];
+  /* 引用符がない場合、print/prin等と括弧を除いた中身を取る */
+  const inner=code.replace(/^[a-zA-Z]+\s*\(?/,'').replace(/\)?\s*$/,'').replace(/["']/g,'').trim();
+  return inner||'Hello, AI Agent!';
+}
+
+function checkCode(code){
+  code=code.trim();
+  if(!code) return {ok:false, msg:'コードが空です。', fix:'print("Hello, AI Agent!")', errors:[]};
+
+  /* 正しい形: print("...") or print('...') */
+  const validPrint=/^print\(["'].*["']\)$/;
+  if(validPrint.test(code)) return {ok:true};
+
+  /* エラーを全て収集 */
+  const errors=[];
+  const text=extractText(code);
+  const correctCode=`print("${text}")`;
+
+  /* 関数名チェック */
+  const funcName=code.match(/^([a-zA-Z]+)/);
+  if(funcName&&funcName[1]!=='print'){
+    errors.push(`"${funcName[1]}" は定義されていません。正しくは → print`);
+  }
+
+  /* 開き括弧チェック */
+  if(!code.includes('(')){
+    errors.push('開き括弧 ( がありません');
+  }
+
+  /* 閉じ括弧チェック */
+  if(!code.endsWith(')')){
+    errors.push('閉じ括弧 ) がありません');
+  }
+
+  /* 引用符チェック */
+  const quotes=(code.match(/["']/g)||[]).length;
+  if(quotes<2){
+    errors.push('文字列を囲む引用符 "" が不足しています');
+  } else {
+    const open=(code.match(/\(["']/)||null);
+    const close=(code.match(/["']\)/)||null);
+    if(!open) errors.push('開き引用符の位置が正しくありません');
+    if(!close) errors.push('閉じ引用符の位置が正しくありません');
+  }
+
+  if(errors.length===0){
+    errors.push('print文の構文が正しくありません');
+  }
+
+  const msg='SyntaxError: '+errors.join(' / ');
+  return {ok:false, msg, fix:correctCode, errors};
+}
+
+function showCodeError(msg){
+  const el=document.getElementById('codeErr');
+  el.textContent='❌ '+msg;
+  el.classList.add('show');
+}
+function hideCodeError(){
+  const el=document.getElementById('codeErr');
+  el.textContent='';
+  el.classList.remove('show');
+}
+
 function updateOutput(text){
   document.querySelector('#pResult .out-hd').innerHTML=`<div class="out-dot" style="background:#22c55e;"></div><div class="out-lbl">実行完了</div>`;
   const ot=document.getElementById('outTxt');
@@ -743,7 +858,14 @@ function runCode(){
     m.innerHTML+=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">まずはスライドのコードをクリックするか、コードをリクエストしてみてください！</div></div>`;
     m.scrollTop=9999;return;
   }
-  const curCode=document.getElementById('pCode').textContent;
+  const curCode=document.getElementById('pCode').textContent.trim();
+  const result=checkCode(curCode);
+  if(!result.ok){
+    showCodeError(result.msg);
+    switchTab('Code');
+    return;
+  }
+  hideCodeError();
   const rm=curCode.match(/print\(["'](.+?)["']\)/);
   updateOutput(rm?rm[1]:curCode);
   switchTab('Result');
