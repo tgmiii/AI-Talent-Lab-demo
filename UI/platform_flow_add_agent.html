@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>AI TalentLab — Full Cycle</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#07090f;font-family:'Noto Sans KR',sans-serif;overflow:hidden;}
+
+/* ── NAV ── */
+.nav{height:44px;background:#090d18;border-bottom:1px solid #141c2c;display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:10;}
+.brand{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#eef2ff;letter-spacing:-.02em;}
+.brand em{color:#6ee7b7;font-style:normal;}
+.nav-sep{width:1px;height:16px;background:#141c2c;}
+.nav-bc{font-size:9.5px;color:#8090a8;}
+.nav-bc strong{color:#b0bcd0;font-weight:500;}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.v-badge{display:flex;align-items:center;gap:5px;background:#0c1a10;border:1px solid #162010;border-radius:20px;padding:4px 12px;cursor:pointer;}
+.v-dot{width:5px;height:5px;border-radius:50%;background:#6ee7b7;animation:vp 1.1s ease-in-out infinite;}
+@keyframes vp{0%,100%{opacity:1}50%{opacity:.2}}
+.v-txt{font-size:9px;color:#3a6040;font-weight:500;}
+.s-badge{font-size:9px;color:#2a3a50;background:#080c14;border:1px solid #141c2c;border-radius:4px;padding:3px 9px;}
+.s-badge strong{color:#4a5a70;}
+
+/* ── WORKSPACE ── */
+.ws{display:flex;height:calc(100vh - 44px);position:relative;}
+
+/* ── LEFT: SLIDE & CHAT ── */
+.left{width:440px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#090d18;}
+
+/* SLIDE AREA (16:9) */
+.slide{background:#0d1120;flex-shrink:0;border-bottom:1px solid #141c2c;}
+.s-ratio{width:100%;padding-top:56.25%;position:relative;}
+.s-content{position:absolute;inset:0;padding:24px 30px;display:flex;flex-direction:column;justify-content:center;}
+.s-eye{font-size:8px;font-weight:700;color:#1e2d40;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.s-h{font-size:20px;font-weight:800;color:#d8e4ff;font-family:'Syne',sans-serif;line-height:1.2;margin-bottom:10px;}
+.s-p{font-size:10px;color:#4a5a70;line-height:1.7;margin-bottom:14px;}
+.s-sel{background:#060a10;border:1.5px dashed #1a2535;border-radius:7px;padding:12px;cursor:pointer;transition:all .15s;position:relative;}
+.s-sel:hover{border-color:#6ee7b7;border-style:solid;background:#080f0a;}
+.s-hint{position:absolute;top:-8px;right:10px;background:#6ee7b7;color:#060a10;font-size:7.5px;font-weight:800;padding:1px 6px;border-radius:2px;opacity:0;transition:opacity .15s;}
+.s-sel:hover .s-hint{opacity:1;}
+.s-code{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#3a7050;line-height:1.7;}
+.s-code .kw{color:#b04040;}.s-code .str{color:#4a80b0;}
+
+/* SLIDE CTRL */
+.s-ctrl{height:28px;background:#080c14;border-bottom:1px solid #141c2c;display:flex;align-items:center;padding:0 10px;gap:7px;}
+.sc-btn{background:none;border:1px solid #141c2c;border-radius:3px;width:18px;height:18px;color:#2a3a50;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;}
+.sc-btn:hover{color:#6070a0;border-color:#1e2d40;}
+.sc-num{font-size:8px;color:#1e2d40;font-family:'IBM Plex Mono',monospace;}
+.sc-dots{display:flex;gap:3px;flex:1;justify-content:center;}
+.sc-dot{width:4px;height:4px;border-radius:50%;background:#141c2c;}
+.sc-dot.ac{background:#6ee7b7;width:10px;border-radius:2px;}
+.done-btn{margin-left:auto;background:#141c2c;border:none;border-radius:4px;padding:2px 8px;font-size:8.5px;color:#2a3a50;cursor:not-allowed;font-weight:600;}
+.done-btn.ready{background:#0c1a0c;border:1px solid #22c55e;color:#22c55e;cursor:pointer;}
+
+/* CHAT AREA */
+.vibe{flex:1;display:flex;flex-direction:column;min-height:0;}
+.v-hd{height:34px;background:#0b0f1a;border-bottom:1px solid #141c2c;display:flex;align-items:center;padding:0 14px;gap:8px;}
+.v-icon{width:18px;height:18px;border-radius:5px;background:#0c1828;border:1.5px solid #1a3050;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#4a80d0;font-family:'Syne',sans-serif;}
+.v-title{font-size:10px;font-weight:700;color:#c0cce0;}
+.v-role{font-size:8px;color:#142030;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
+
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:7px;}
+.msgs::-webkit-scrollbar{width:2px;}
+.msgs::-webkit-scrollbar-thumb{background:#141c2c;}
+.msg{display:flex;gap:8px;}
+.av{width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;font-family:'Syne',sans-serif;}
+.av-ai{background:#0c1828;color:#4a80d0;}
+.av-me{background:#0c1428;color:#4a6080;}
+.bub{padding:7px 10px;border-radius:7px;font-size:9.5px;line-height:1.6;max-width:88%;}
+.b-ai{background:#0d1322;border:1px solid #141c2c;border-top-left-radius:2px;color:#8090a8;}
+.b-me{background:#0c1428;border:1px solid #121e38;color:#5a7090;border-top-right-radius:2px;}
+.mer{flex-direction:row-reverse;}
+
+/* INP */
+.inp-area{padding:10px 12px;border-top:1px solid #141c2c;background:#0b0f1a;}
+.inp-box{display:flex;gap:7px;align-items:flex-end;background:#0d1322;border:1.5px solid #141c2c;border-radius:10px;padding:8px 11px;transition:border-color .15s;}
+.inp-box:focus-within{border-color:#1a3050;}
+.ta{flex:1;background:none;border:none;outline:none;font-size:10.5px;color:#8090a8;font-family:'Noto Sans KR',sans-serif;resize:none;max-height:80px;min-height:20px;line-height:1.5;}
+.ta::placeholder{color:#1a2535;}
+.send{width:28px;height:28px;background:#142040;border:none;border-radius:7px;color:#4a80d0;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.send:hover{background:#2060d0;color:#fff;}
+
+/* ── RIGHT: IDE ── */
+.right{flex:1;display:flex;flex-direction:column;background:#060a10;}
+.tabs{display:flex;background:#080c14;border-bottom:1px solid #141c2c;}
+.it{padding:10px 18px;font-size:9.5px;font-family:'IBM Plex Mono',monospace;color:#1e2d3e;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;}
+.it:hover{color:#3a4a60;}
+.it.ac{color:#d0daf0;border-bottom-color:#6ee7b7;}
+.run{margin-left:auto;background:#0c1a10;border:none;border-left:1px solid #141c2c;padding:0 16px;font-size:9.5px;color:#6ee7b7;cursor:not-allowed;font-weight:700;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:5px;}
+.run.ready{cursor:pointer;}
+.run.ready:hover{background:#142010;}
+.run::before{content:'▶';font-size:8px;}
+
+.p-code{flex:1;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#a0b0c8;overflow-y:auto;position:relative;}
+.p-code::-webkit-scrollbar{width:3px;}
+.p-code::-webkit-scrollbar-thumb{background:#141c2c;}
+.p-res{flex:1;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6ee7b7;background:#04060a;}
+.hidden{display:none;}
+
+/* ── M-TRIGGER ── */
+.m-trig{
+  position:absolute;width:24px;height:24px;border-radius:8px;
+  background:#0c1e10;border:1.5px solid #246040;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:9px;font-weight:800;color:#6ee7b7;
+  cursor:pointer;transition:all .15s;z-index:20;
+  transform:scale(0);opacity:0;
+}
+.m-trig.show{transform:scale(1);opacity:1;}
+.m-trig:hover{border-color:#6ee7b7;background:#0e2812;}
+.m-pulse{position:absolute;inset:-4px;border-radius:10px;border:1.5px solid #6ee7b7;animation:mps 1.5s ease-out infinite;}
+@keyframes mps{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(1.4);opacity:0;}}
+
+#m-slide{top:125px;left:415px;}
+#m-code{top:60px;right:30px;}
+#m-result{top:20px;right:20px;}
+
+/* ── BUBBLE ── */
+.bub-wrap{
+  position:absolute;z-index:100;
+  width:260px;background:#0a1a0d;border:1.5px solid #1a4028;
+  border-radius:12px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.55);
+  display:none;
+}
+.bub-wrap.open{display:block;animation:bin .2s ease-out;}
+@keyframes bin{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.bub-txt{font-size:9.5px;color:#5a9070;line-height:1.6;margin-bottom:10px;}
+.bub-txt strong{color:#6ee7b7;}
+.bub-btn{background:#0e2a18;border:1px solid #246040;border-radius:5px;width:100%;padding:6px;font-size:9px;color:#6ee7b7;font-weight:700;cursor:pointer;transition:all .15s;}
+.bub-btn:hover{background:#6ee7b7;color:#060a10;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="brand">AI Talent<em>Lab</em></div>
+  <div class="nav-sep"></div>
+  <div class="nav-bc">バイブコーディング ブートキャンプ · <strong>Week 2 · AI Agent</strong></div>
+  <div class="nav-r">
+    <div class="v-badge">
+      <div class="v-dot"></div>
+      <div class="v-txt">ボイス再生中</div>
+    </div>
+    <div class="s-badge">スライド <strong>7</strong> / 19</div>
+  </div>
+</div>
+
+<div class="ws">
+  <div class="left">
+    <div class="slide">
+      <div class="s-ratio">
+        <div class="s-content">
+          <div class="s-eye">WEEK 2 · SLIDE 7</div>
+          <div class="s-h">AIを動かす最初のコード</div>
+          <div class="s-p">AIにやりたいことを伝えると、コードを生成します。<br>下のコードをクリックして、チャットウィンドウに反映させてみましょう。</div>
+          <div class="s-sel" onclick="insertCode()">
+            <div class="s-hint">チャットへ反映 →</div>
+            <div class="s-code"><span class="kw">print</span>(<span class="str">"Hello, AI Agent!"</span>)</div>
+          </div>
+        </div>
+      </div>
+      <div class="m-trig" id="m-slide" onclick="openBub('m-slide')">
+        M <div class="m-pulse"></div>
+      </div>
+    </div>
+    
+    <div class="s-ctrl">
+      <button class="sc-btn">‹</button>
+      <div class="sc-num">7 / 19</div>
+      <div class="sc-dots"><div class="sc-dot"></div><div class="sc-dot"></div><div class="sc-dot"></div><div class="sc-dot ac"></div><div class="sc-dot"></div></div>
+      <button class="sc-btn">›</button>
+      <button class="done-btn" id="doneBtn" onclick="markDone()">✓ 完了</button>
+    </div>
+
+    <div class="vibe">
+      <div class="v-hd">
+        <div class="v-icon">AI</div>
+        <div class="v-title">バイブコーディング チャット</div>
+        <div class="v-role">Agent 連動</div>
+      </div>
+      <div class="msgs" id="msgs">
+        <div class="msg">
+          <div class="av av-ai">AI</div>
+          <div class="b-ai bub">こんにちは！最初の実習ですね。<br>左側のコードをクリックして、私に実行を依頼してみてください。</div>
+        </div>
+      </div>
+      <div class="inp-area">
+        <div class="inp-box">
+          <textarea class="ta" id="chatTA" placeholder="AIへのリクエストを入力..." rows="1" oninput="autoH(this)"></textarea>
+          <button class="send" id="sendBtn" onclick="send()">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="tabs">
+      <div class="it ac" id="t-Code" onclick="switchTab('Code')">main.py</div>
+      <div class="it" id="t-Result" onclick="switchTab('Result')">Console</div>
+      <button class="run" id="runBtn" onclick="run()">実行</button>
+    </div>
+    <div class="p-code" id="p-Code">
+      <div style="color:#1a2535; font-style:italic;"># チャットを通じてコードが生成されます</div>
+      <div class="m-trig" id="m-code" onclick="openBub('m-code')">
+        M <div class="m-pulse"></div>
+      </div>
+    </div>
+    <div class="p-res hidden" id="p-Result">
+      <div id="resTxt" style="color:#1a2535;">> 実行結果がここに表示されます</div>
+      <div class="m-trig" id="m-result" onclick="openBub('m-result')">
+        M <div class="m-pulse"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bub-wrap" id="bub-m-slide" style="top:150px; left:415px;">
+  <div class="bub-txt"><strong>「AIに指示する」</strong>ということが重要です。<br>このコードをチャットに送って、どんな意味か聞いてみましょうか？</div>
+  <button class="bub-btn" onclick="action('slide')">やってみます</button>
+</div>
+
+<div class="bub-wrap" id="bub-m-code" style="top:90px; right:30px;">
+  <div class="bub-txt">コードが反映されましたね！<br>上の<strong>実行ボタン</strong>を押すと、AIが実際にこのコードを動かします。</div>
+  <button class="bub-btn" onclick="action('code')">実行してみる</button>
+</div>
+
+<div class="bub-wrap" id="bub-m-result" style="top:50px; right:20px;">
+  <div class="bub-txt">成功です！🎉<br><strong>Hello, AI Agent!</strong> が出力されましたね。これで最初の実習は完了です！</div>
+  <button class="bub-btn" onclick="action('result')">実習を完了する</button>
+</div>
+
+<script>
+let phase = 1;
+
+function autoH(t){ t.style.height='auto'; t.style.height=t.scrollHeight+'px'; }
+
+function setPhase(n){
+  phase = n;
+  document.querySelectorAll('.m-trig').forEach(el=>el.classList.remove('show'));
+  if(n==1) document.getElementById('m-slide').classList.add('show');
+  if(n==3) document.getElementById('m-code').classList.add('show');
+  if(n==4) document.getElementById('m-result').classList.add('show');
+  if(n==6) document.getElementById('doneBtn').classList.add('ready');
+}
+setTimeout(()=>setPhase(1), 1000);
+
+function openBub(id){
+  document.querySelectorAll('.bub-wrap').forEach(b=>b.classList.remove('open'));
+  document.getElementById('bub-'+id).classList.add('open');
+}
+
+function action(type){
+  document.querySelectorAll('.bub-wrap').forEach(b=>b.classList.remove('open'));
+  if(type==='slide') insertCode();
+  if(type==='code') run();
+  if(type==='result') enableDone();
+}
+
+function insertCode(){
+  const ta = document.getElementById('chatTA');
+  ta.value = 'print("Hello, AI Agent!") を実行して。';
+  autoH(ta);
+  ta.focus();
+}
+
+function send(){
+  const ta = document.getElementById('chatTA');
+  if(!ta.value.trim()) return;
+  
+  const msgs = document.getElementById('msgs');
+  msgs.innerHTML += `<div class="msg mer"><div class="av av-me">私</div><div class="b-me bub">${ta.value}</div></div>`;
+  ta.value=''; autoH(ta);
+  msgs.scrollTop = 9999;
+
+  setTimeout(()=>{
+    msgs.innerHTML += `<div class="msg"><div class="av av-ai">AI</div><div class="b-ai bub">はい、コードをIDEに反映しました。実行ボタンを押して確認してください。</div></div>`;
+    msgs.scrollTop = 9999;
+    
+    document.getElementById('p-Code').innerHTML = `<span style="color:#3a7050;">print</span>(<span style="color:#4a80b0;">"Hello, AI Agent!"</span>)`;
+    document.getElementById('runBtn').classList.add('ready');
+    setPhase(3);
+  }, 700);
+}
+
+function run(){
+  if(phase < 3) return;
+  const res = document.getElementById('resTxt');
+  res.innerHTML = `<span style="color:#6ee7b7; font-family:'IBM Plex Mono';">Hello, AI Agent!</span>`;
+  switchTab('Result');
+
+  // 実行ボタンの状態更新
+  document.getElementById('runBtn').classList.remove('ready');
+
+  // 結果 M 登場 (少し遅らせる)
+  setTimeout(()=>{
+    openBub('m-result');
+    setPhase(4);
+  },600);
+
+  // チャットに通知
+  const msgs=document.getElementById('msgs');
+  msgs.innerHTML+=`<div class="msg"><div class="av av-ai">AI</div><div class="b-ai bub">実行完了！ 🎉 右側で結果を確認して、<br><strong style="color:#4a7040;">結果の隣の M ボタン</strong>を押してみてください。</div></div>`;
+  msgs.scrollTop=9999;
+}
+
+function switchTab(n){
+  ['Code','Result'].forEach(x=>{
+    document.getElementById('t-'+x).className='it'+(x===n?' ac':'');
+    document.getElementById('p-'+x).classList.toggle('hidden',x!==n);
+  });
+}
+
+function markDone(){
+  if(!document.getElementById('doneBtn').classList.contains('ready')) return;
+  const b=document.getElementById('doneBtn');
+  b.textContent='✓ 完了済み';
+  b.style.background='#22c55e';
+  b.style.color='#05080e';
+  setPhase(6);
+}
+
+// 完了ボタンは結果のMをクリックした後に有効化
+function enableDone(){
+  document.getElementById('doneBtn').classList.add('ready');
+  setPhase(6);
+}
+</script>
+</body>
+</html>
