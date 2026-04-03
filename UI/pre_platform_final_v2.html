@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>AI TalentLab — Final</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;overflow:hidden;}
+
+/* ── NAV ── */
+.nav{height:44px;background:#0a0d16;border-bottom:1px solid #141c2c;display:flex;align-items:center;padding:0 16px;gap:12px;z-index:30;position:relative;flex-shrink:0;}
+.brand{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#eef2ff;letter-spacing:-.02em;}
+.brand em{color:#6ee7b7;font-style:normal;}
+.nsep{width:1px;height:16px;background:#141c2c;}
+.nbread{font-size:9.5px;color:#8090a8;}
+.nbread strong{color:#b0bcd0;font-weight:500;}
+.toc-btn{display:flex;align-items:center;gap:5px;background:#0e1320;border:1px solid #141c2c;border-radius:6px;padding:4px 10px;font-size:9px;color:#3a4a60;cursor:pointer;transition:all .15s;}
+.toc-btn:hover{border-color:#1e2d40;color:#6070a0;}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.vbadge{display:flex;align-items:center;gap:5px;background:#0c1a10;border:1px solid #162010;border-radius:20px;padding:4px 12px;cursor:pointer;}
+.vdot{width:5px;height:5px;border-radius:50%;background:#6ee7b7;animation:vp 1.1s ease-in-out infinite;}
+.vdot.off{background:#1e2a1e;animation:none;}
+@keyframes vp{0%,100%{opacity:1}50%{opacity:.2}}
+.vtext{font-size:9px;color:#3a6040;font-weight:500;}
+.sbadge{font-size:9px;color:#2a3a50;background:#0c1018;border:1px solid #141c2c;border-radius:4px;padding:3px 9px;}
+.sbadge strong{color:#4a5a70;}
+
+/* ── TOC ── */
+.toc-drawer{position:fixed;top:44px;left:0;bottom:0;width:220px;z-index:60;background:#0a0d16;border-right:1px solid #141c2c;transform:translateX(-100%);transition:transform .2s ease;display:flex;flex-direction:column;}
+.toc-drawer.open{transform:translateX(0);}
+.toc-head{height:38px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid #141c2c;justify-content:space-between;}
+.toc-title{font-size:9px;font-weight:700;color:#2a3a50;letter-spacing:.08em;text-transform:uppercase;}
+.toc-x{background:none;border:none;color:#2a3a50;cursor:pointer;font-size:13px;}
+.toc-scroll{flex:1;overflow-y:auto;padding:5px 0;}
+.toc-scroll::-webkit-scrollbar{width:2px;}
+.toc-scroll::-webkit-scrollbar-thumb{background:#141c2c;}
+.toc-ch-t{padding:6px 14px;font-size:8px;font-weight:700;color:#1e2d40;letter-spacing:.06em;text-transform:uppercase;}
+.toc-row{display:flex;align-items:center;gap:7px;padding:5px 14px;cursor:pointer;transition:background .1s;}
+.toc-row:hover{background:#0e1320;}
+.toc-row.on{background:#0c1a10;}
+.ls{width:11px;height:11px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:5.5px;}
+.ld{background:#162010;border:1.5px solid #22c55e;color:#22c55e;}
+.la{background:#6ee7b7;color:#060a10;font-weight:800;}
+.lt{background:transparent;border:1.5px solid #141c2c;}
+.toc-lname{font-size:9px;color:#2a3a50;}
+.toc-lname.on{color:#6ee7b7;font-weight:600;}
+
+/* ── WORKSPACE ── */
+.ws{display:flex;height:calc(100vh - 44px);position:relative;}
+
+/* ─────────────────────────────
+   LEFT PANEL
+   슬라이드 / 멘토 트리거 / 바이브코딩 챗
+───────────────────────────── */
+.left{width:44%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#0a0d16;}
+
+/* 슬라이드 16:9 */
+.slide-wrap{flex-shrink:0;background:#0d1120;}
+.slide-ratio{width:100%;padding-top:56.25%;position:relative;}
+.slide-in{position:absolute;inset:0;padding:24px 30px;display:flex;flex-direction:column;justify-content:center;}
+.s-eye{font-size:8px;font-weight:700;color:#1e2d40;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.s-h{font-size:20px;font-weight:800;color:#d8e4ff;font-family:'Syne',sans-serif;line-height:1.2;margin-bottom:10px;}
+.s-body{font-size:10px;color:#4a5a70;line-height:1.7;margin-bottom:12px;}
+.sel{border-radius:7px;padding:9px 12px;cursor:pointer;transition:all .15s;position:relative;margin-bottom:7px;}
+.scode{background:#07090f;border:1.5px dashed #1a2535;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3a7050;line-height:1.75;}
+.scode:hover{border-color:#6ee7b7;border-style:solid;background:#080f0a;}
+.sprompt{background:#0c1525;border:1.5px dashed #152030;}
+.sprompt:hover{border-color:#3a70c0;border-style:solid;}
+.shint{position:absolute;top:-8px;right:8px;font-size:7px;font-weight:700;padding:1px 6px;border-radius:2px;opacity:0;transition:opacity .15s;font-family:'Noto Sans KR',sans-serif;}
+.sel:hover .shint{opacity:1;}
+.scode .shint{background:#6ee7b7;color:#060a10;}
+.sprompt .shint{background:#3a70c0;color:#fff;}
+.spt{font-size:9.5px;color:#2a4a70;font-style:italic;}
+.kw{color:#b04040;}.str{color:#4a80b0;}.cm{color:#1e2d40;}
+@keyframes cfl{0%{background:#0a200f}100%{background:#07090f}}
+.cflash{animation:cfl .35s ease-out;}
+
+/* 슬라이드 컨트롤 */
+.sctrl{height:30px;background:#080c14;border-top:1px solid #141c2c;border-bottom:1px solid #141c2c;display:flex;align-items:center;padding:0 10px;gap:7px;flex-shrink:0;}
+.scbtn{background:none;border:1px solid #141c2c;border-radius:3px;width:18px;height:18px;color:#2a3a50;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;}
+.scbtn:hover{color:#6070a0;border-color:#1e2d40;}
+.scnum{font-size:8px;color:#1e2d40;font-family:'IBM Plex Mono',monospace;}
+.scdots{display:flex;gap:2px;flex:1;justify-content:center;}
+.scdot{width:4px;height:4px;border-radius:50%;background:#141c2c;}
+.scdot.dn{background:#162510;}
+.scdot.ac{background:#6ee7b7;width:10px;border-radius:2px;}
+.donebtn{margin-left:auto;background:#0c1a0c;border:1px solid #22c55e;border-radius:4px;padding:2px 8px;font-size:8px;color:#22c55e;cursor:pointer;font-weight:600;transition:all .15s;}
+.donebtn:hover{background:#22c55e;color:#060a10;}
+
+/* ─────────────────────────────
+   AI 멘토 트리거 스트립
+   — 항상 보이는 얇은 바.
+   — 멘토가 등장할 타이밍에만 내용이 생김
+───────────────────────────── */
+.mentor-strip{
+  flex-shrink:0;height:0;overflow:hidden;
+  background:#0a1a0d;
+  transition:height .3s cubic-bezier(.4,0,.2,1),border .3s;
+  border-top:none;
+}
+.mentor-strip.show{
+  height:46px;
+  border-top:1.5px solid #1a4028;
+}
+.ms-inner{
+  height:46px;display:flex;align-items:center;
+  padding:0 14px;gap:10px;
+}
+/* 멘토 아바타 — 클릭하면 말풍선 토글 */
+.m-ava-btn{
+  width:28px;height:28px;border-radius:9px;flex-shrink:0;
+  background:#0c1e10;border:1.5px solid #246040;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:#6ee7b7;
+  cursor:pointer;transition:all .15s;position:relative;
+}
+.m-ava-btn:hover{border-color:#6ee7b7;background:#0e2812;}
+.m-pulse{
+  position:absolute;top:-2px;right:-2px;width:7px;height:7px;
+  border-radius:50%;background:#6ee7b7;border:1.5px solid #0a1a0d;
+  animation:mp .9s ease-in-out infinite;
+}
+@keyframes mp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+/* 멘토 메시지 미리보기 (스트립 안) */
+.ms-preview{
+  flex:1;font-size:9px;color:#3a7050;line-height:1.4;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.ms-preview strong{color:#6ee7b7;}
+/* 행동 버튼들 */
+.ms-actions{display:flex;gap:5px;flex-shrink:0;}
+.ms-cta{
+  background:#0e2a18;border:1px solid #246040;border-radius:4px;
+  padding:3px 9px;font-size:8px;color:#6ee7b7;cursor:pointer;font-weight:600;
+  transition:all .15s;white-space:nowrap;
+}
+.ms-cta:hover{background:#6ee7b7;color:#060a10;}
+.ms-ask{
+  background:none;border:1px solid #1a3020;border-radius:4px;
+  padding:3px 8px;font-size:8px;color:#2a5030;cursor:pointer;transition:all .15s;
+}
+.ms-ask:hover{border-color:#3a7050;color:#5a9070;}
+.ms-close{
+  background:none;border:none;color:#1a3020;cursor:pointer;font-size:12px;
+  padding:2px;transition:color .12s;flex-shrink:0;
+}
+.ms-close:hover{color:#3a6040;}
+
+/* ─────────────────────────────
+   말풍선 — 오른쪽으로 펼쳐짐
+   position:absolute, 멘토 스트립 기준
+───────────────────────────── */
+.bubble-wrap{
+  position:absolute;
+  /* 멘토 스트립 높이에 따라 JS로 top 계산 */
+  left:44%; /* left panel 끝 */
+  width:340px;
+  z-index:50;
+  pointer-events:none;
+  opacity:0;
+  transform:translateX(-8px) scale(.97);
+  transform-origin:left center;
+  transition:opacity .22s ease, transform .22s ease;
+}
+.bubble-wrap.open{
+  pointer-events:all;
+  opacity:1;
+  transform:translateX(0) scale(1);
+}
+/* 꼬리 */
+.bubble-tail{
+  position:absolute;left:-7px;top:18px;
+  width:0;height:0;
+  border-top:7px solid transparent;
+  border-bottom:7px solid transparent;
+  border-right:8px solid #1a4028;
+}
+.bubble-box{
+  background:#0a1a0d;border:1.5px solid #1a4028;
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+}
+/* 말풍선 헤더 */
+.bb-head{
+  height:38px;padding:0 13px;
+  border-bottom:1px solid #162010;
+  display:flex;align-items:center;gap:8px;
+  background:#0c2010;
+}
+.bb-ava{
+  width:22px;height:22px;border-radius:7px;
+  background:#0e2814;border:1.5px solid #246040;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:8px;font-weight:800;color:#6ee7b7;
+}
+.bb-title{font-size:10px;font-weight:700;color:#7adab0;}
+.bb-sub{font-size:8px;color:#1a4028;margin-left:2px;}
+.bb-x{
+  margin-left:auto;background:none;border:none;
+  color:#1a4028;cursor:pointer;font-size:13px;transition:color .12s;
+}
+.bb-x:hover{color:#6ee7b7;}
+
+/* 대화 내역 */
+.bb-msgs{
+  max-height:200px;overflow-y:auto;
+  padding:10px 13px;display:flex;flex-direction:column;gap:7px;
+}
+.bb-msgs::-webkit-scrollbar{width:2px;}
+.bb-msgs::-webkit-scrollbar-thumb{background:#1a3020;}
+.bm{display:flex;gap:6px;}
+.bm-ai-ava{width:18px;height:18px;border-radius:5px;background:#0c1e10;border:1px solid #1e3a28;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:6.5px;font-weight:800;color:#6ee7b7;flex-shrink:0;}
+.bm-me-ava{width:18px;height:18px;border-radius:5px;background:#0c1428;border:1px solid #1a2a40;display:flex;align-items:center;justify-content:center;font-size:6.5px;font-weight:700;color:#4a6080;flex-shrink:0;}
+.bm-bub{padding:6px 9px;border-radius:6px;font-size:9.5px;line-height:1.55;max-width:84%;}
+.bm-ai{background:#0d1e14;border:1px solid #162010;border-top-left-radius:2px;color:#5a9070;}
+.bm-ai strong{color:#9ae8c0;}
+.bm-me-row{flex-direction:row-reverse;}
+.bm-me{background:#0c1428;border:1px solid #142030;color:#4a7090;border-top-right-radius:2px;}
+.bm-typing{display:flex;gap:3px;padding:8px 9px;}
+.bm-dot{width:4px;height:4px;border-radius:50%;background:#1a3020;animation:btd .7s ease-in-out infinite;}
+.bm-dot:nth-child(2){animation-delay:.1s;}
+.bm-dot:nth-child(3){animation-delay:.2s;}
+@keyframes btd{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* 입력창 */
+.bb-inp{
+  border-top:1px solid #162010;padding:8px 10px;
+  display:flex;gap:6px;align-items:flex-end;
+  background:#080e09;
+}
+.bb-ta{
+  flex:1;background:#0a1810;border:1px solid #162010;border-radius:7px;
+  padding:6px 10px;font-size:9.5px;color:#5a9070;
+  font-family:'Noto Sans KR',sans-serif;outline:none;resize:none;
+  min-height:28px;max-height:60px;line-height:1.5;transition:border-color .15s;
+}
+.bb-ta::placeholder{color:#1a3020;}
+.bb-ta:focus{border-color:#2a6040;}
+.bb-send{
+  width:26px;height:26px;background:#0e2a18;
+  border:1px solid #246040;border-radius:6px;
+  color:#6ee7b7;font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .12s;
+}
+.bb-send:hover{background:#6ee7b7;color:#060a10;}
+/* 챗으로 이동 */
+.bb-route{
+  border-top:1px solid #0e1e10;padding:6px 10px;
+  display:flex;align-items:center;gap:7px;background:#070d08;
+}
+.bb-route-txt{font-size:8px;color:#1a3020;}
+.bb-route-btn{
+  margin-left:auto;display:flex;align-items:center;gap:4px;
+  background:none;border:1px solid #1a3020;border-radius:4px;
+  padding:2px 9px;font-size:8px;color:#2a5030;cursor:pointer;transition:all .15s;
+}
+.bb-route-btn:hover{border-color:#2a6040;color:#6ee7b7;}
+.bb-route-btn::after{content:'↓';}
+
+/* ─────────────────────────────
+   바이브코딩 챗
+───────────────────────────── */
+.vibe{flex:1;display:flex;flex-direction:column;min-height:0;background:#090d18;}
+.vibe-head{
+  height:34px;flex-shrink:0;background:#0b0f1a;border-top:1px solid #141c2c;border-bottom:1px solid #141c2c;
+  display:flex;align-items:center;padding:0 14px;gap:8px;
+}
+.vh-icon{width:18px;height:18px;border-radius:5px;background:#0c1828;border:1.5px solid #1a3050;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#4a80d0;font-family:'Syne',sans-serif;}
+.vh-title{font-size:10px;font-weight:700;color:#c0cce0;}
+.vh-role{font-size:8px;color:#142030;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
+.vh-ctx{margin-left:auto;font-size:8px;color:#1a2a40;background:#08101a;border:1px solid #141c2c;border-radius:3px;padding:1px 6px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 6px;display:flex;flex-direction:column;gap:7px;}
+.chat-msgs::-webkit-scrollbar{width:2px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:#141c2c;}
+.msg{display:flex;gap:8px;}
+.ava{width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;font-family:'Syne',sans-serif;}
+.av-ai{background:#0c1828;color:#4a80d0;}
+.av-me{background:#0c1428;color:#4a6080;}
+.bub{padding:7px 10px;border-radius:7px;font-size:9.5px;line-height:1.6;max-width:88%;}
+.b-ai{background:#0d1322;border:1px solid #141c2c;border-top-left-radius:2px;color:#8090a8;}
+.b-me{background:#0c1428;border:1px solid #121e38;color:#5a7090;border-top-right-radius:2px;}
+.mer{flex-direction:row-reverse;}
+.code-bub{background:#060a10;border:1px solid #141c2c;border-radius:5px;padding:7px 10px;margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4a8060;line-height:1.7;}
+.apply-tag{display:inline-flex;align-items:center;gap:4px;margin-top:5px;background:#0c1a10;border:1px solid #22c55e;border-radius:4px;padding:2px 8px;font-size:8px;color:#22c55e;cursor:pointer;font-weight:600;transition:all .15s;}
+.apply-tag:hover{background:#22c55e;color:#060a10;}
+.typing-r{display:flex;gap:3px;padding:7px 10px;}
+.tdot{width:4px;height:4px;border-radius:50%;background:#1e2d3e;animation:td .65s ease-in-out infinite;}
+.tdot:nth-child(2){animation-delay:.1s;}
+.tdot:nth-child(3){animation-delay:.2s;}
+@keyframes td{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.inp-area{flex-shrink:0;padding:10px 12px;border-top:1px solid #141c2c;background:#0b0f1a;}
+.inp-box{display:flex;gap:7px;align-items:flex-end;background:#0d1322;border:1.5px solid #141c2c;border-radius:10px;padding:8px 11px;transition:border-color .15s;}
+.inp-box:focus-within{border-color:#1a3050;}
+.chat-ta{flex:1;background:none;border:none;outline:none;font-size:10px;color:#8090a8;font-family:'Noto Sans KR',sans-serif;resize:none;max-height:72px;min-height:20px;line-height:1.5;}
+.chat-ta::placeholder{color:#1a2535;}
+.send-btn{width:28px;height:28px;background:#142040;border:none;border-radius:7px;color:#4a80d0;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.send-btn:hover{background:#2060d0;color:#fff;}
+.chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.chip{background:#0d1322;border:1px solid #141c2c;border-radius:4px;padding:2px 8px;font-size:8px;color:#1e2d3e;cursor:pointer;transition:all .12s;}
+.chip:hover{border-color:#1a3050;color:#4a80d0;}
+
+/* ── RIGHT: IDE ── */
+.right{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0;}
+.ide-tabs{display:flex;background:#080c14;border-bottom:1px solid #141c2c;flex-shrink:0;}
+.ide-tab{padding:9px 16px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:#1e2d3e;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;}
+.ide-tab:hover{color:#3a4a60;}
+.ide-tab.ac{color:#d0daf0;border-bottom-color:#6ee7b7;}
+.ide-tab.badge{position:relative;}
+.ide-tab.badge::after{content:'';position:absolute;top:5px;right:4px;width:4px;height:4px;border-radius:50%;background:#6ee7b7;}
+.run-btn{margin-left:auto;background:#0c1a10;border:none;border-left:1px solid #141c2c;padding:0 14px;font-size:9px;color:#6ee7b7;cursor:pointer;font-weight:700;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:4px;transition:background .12s;}
+.run-btn::before{content:'▶';font-size:7px;}
+.run-btn:hover{background:#142010;}
+.ide-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.code-area{flex:1;padding:16px 18px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.9;color:#a0b0c8;overflow-y:auto;}
+.code-area::-webkit-scrollbar{width:3px;}
+.code-area::-webkit-scrollbar-thumb{background:#141c2c;}
+@keyframes ifl{0%{background:rgba(110,231,183,.1)}100%{background:transparent}}
+.iflash{animation:ifl .7s ease-out;}
+.out-strip{border-top:1px solid #141c2c;background:#040608;flex-shrink:0;}
+.out-hd{height:26px;border-bottom:1px solid #141c2c;padding:0 14px;display:flex;align-items:center;gap:6px;}
+.out-dot{width:5px;height:5px;border-radius:50%;}
+.out-lbl{font-size:8.5px;color:#1a2535;font-family:'IBM Plex Mono',monospace;}
+.out-body{padding:10px 18px;min-height:40px;font-family:'IBM Plex Mono',monospace;font-size:10px;}
+.out-empty{color:#141c2c;font-style:italic;}
+.prev-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;}
+.mini-app{background:#f9fafb;border-radius:10px;width:80%;padding:16px 20px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.app-h{font-size:12px;font-weight:700;color:#111;margin-bottom:9px;}
+.app-row{display:flex;gap:4px;margin-bottom:9px;}
+.app-f{flex:1;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:4px 8px;font-size:8px;color:#64748b;}
+.app-add{background:#2563eb;color:#fff;border:none;border-radius:4px;padding:4px 11px;font-size:8px;font-weight:700;cursor:pointer;}
+.tr{display:flex;align-items:center;gap:7px;padding:3px 0;}
+.tc{width:10px;height:10px;border-radius:2px;}
+.ton{background:#22c55e;}.toff{background:#e2e8f0;}
+.tt{font-size:8px;color:#374151;}.tdone{text-decoration:line-through;color:#94a3b8;}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="brand">AI Talent<em>Lab</em></div>
+  <div class="nsep"></div>
+  <div class="nbread">바이브코딩 부트캠프 · <strong>Week 2 · AI Agent 실습</strong></div>
+  <button class="toc-btn" onclick="toggleTOC()">☰ 목차</button>
+  <div class="nav-r">
+    <div class="vbadge" onclick="toggleVoice()">
+      <div class="vdot" id="vdot"></div>
+      <div class="vtext" id="vtext">보이스 재생 중</div>
+    </div>
+    <div class="sbadge">슬라이드 <strong id="snum">7</strong> / 19</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-drawer" id="tocD">
+  <div class="toc-head"><div class="toc-title">커리큘럼</div><button class="toc-x" onclick="toggleTOC()">✕</button></div>
+  <div class="toc-scroll">
+    <div><div class="toc-ch-t">Week 1 · 기초</div>
+      <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">바이브코딩이란</div></div>
+      <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">환경 세팅</div></div>
+      <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">첫 프롬프트 작성</div></div>
+    </div>
+    <div><div class="toc-ch-t">Week 2 · AI Agent</div>
+      <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">Agent 개념 이해</div></div>
+      <div class="toc-row"><div class="ls ld">✓</div><div class="toc-lname">간단한 Agent 생성</div></div>
+      <div class="toc-row on"><div class="ls la">▶</div><div class="toc-lname on">첫 코드 실습</div></div>
+      <div class="toc-row"><div class="ls lt"></div><div class="toc-lname">구조 다이어그램</div></div>
+      <div class="toc-row"><div class="ls lt"></div><div class="toc-lname">반복 실행 실습</div></div>
+    </div>
+    <div><div class="toc-ch-t">Week 3 · 배포</div>
+      <div class="toc-row"><div class="ls lt"></div><div class="toc-lname">배포 개념</div></div>
+      <div class="toc-row"><div class="ls lt"></div><div class="toc-lname">실전 배포</div></div>
+    </div>
+  </div>
+</div>
+<div id="tocOv" style="display:none;position:fixed;top:44px;left:0;right:0;bottom:0;z-index:50;background:rgba(4,6,14,.45);" onclick="toggleTOC()"></div>
+
+<div class="ws" id="ws">
+
+  <div class="left" id="leftPanel">
+
+    <!-- 슬라이드 -->
+    <div class="slide-wrap">
+      <div class="slide-ratio">
+        <div class="slide-in">
+          <div class="s-eye">실습 1 · Week 2 · 슬라이드 7</div>
+          <div class="s-h">첫 코드 실습<br>AI Agent의 시작</div>
+          <div class="s-body">AI에게 자연어로 지시하면 코드를 생성합니다.<br>아래 요소를 클릭해 챗에 바로 가져가보세요.</div>
+          <div class="sel scode" id="cel" onclick="insertCode()">
+            <div class="shint">채팅창으로 →</div>
+            <div><span class="cm"># Hello, AI Agent!</span></div>
+            <div><span class="kw">print</span>(<span class="str">"Hello, AI Agent!"</span>)</div>
+          </div>
+          <div class="sel sprompt" onclick="insertPrompt()">
+            <div class="shint">채팅창으로 →</div>
+            <div class="spt">💬 "이 코드를 실행하면 어떻게 돼?"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 슬라이드 컨트롤 -->
+    <div class="sctrl">
+      <button class="scbtn" onclick="navS(-1)">‹</button>
+      <div class="scnum" id="scn">7 / 19</div>
+      <div class="scdots">
+        <div class="scdot dn"></div><div class="scdot dn"></div><div class="scdot dn"></div>
+        <div class="scdot dn"></div><div class="scdot dn"></div><div class="scdot dn"></div>
+        <div class="scdot ac"></div>
+        <div class="scdot"></div><div class="scdot"></div><div class="scdot"></div>
+      </div>
+      <button class="scbtn" onclick="navS(1)">›</button>
+      <button class="donebtn" id="doneBtn" onclick="markDone()">✓ 완료</button>
+    </div>
+
+    <!-- 멘토 트리거 스트립 -->
+    <div class="mentor-strip" id="mentorStrip">
+      <div class="ms-inner">
+        <div class="m-ava-btn" id="mavBtn" onclick="toggleBubble()">
+          M
+          <div class="m-pulse"></div>
+        </div>
+        <div class="ms-preview" id="msPreview"></div>
+        <div class="ms-actions">
+          <button class="ms-cta" id="msCTA" onclick="mentorAction()">해볼게요 →</button>
+          <button class="ms-ask" onclick="openBubble()">질문하기</button>
+          <button class="ms-close" onclick="hideMentor()">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 바이브코딩 챗 -->
+    <div class="vibe">
+      <div class="vibe-head">
+        <div class="vh-icon">AI</div>
+        <div class="vh-title">바이브코딩 챗</div>
+        <div class="vh-role">코드 생성 · 실행 · 수정</div>
+        <div class="vh-ctx" id="vhCtx">슬라이드 7 연동</div>
+      </div>
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="msg">
+          <div class="ava av-ai">AI</div>
+          <div class="b-ai bub">안녕하세요! 코드 생성, 실행, 수정을 도와드려요.<br>왼쪽 슬라이드를 클릭하거나 직접 요청해보세요.<br><span style="font-size:8.5px;color:#1e2d3e;display:block;margin-top:4px;">강의 개념이 궁금하면 AI 멘토에게 물어보세요 → 멘토 바 "질문하기"</span></div>
+        </div>
+      </div>
+      <div class="inp-area">
+        <div class="inp-box">
+          <textarea class="chat-ta" id="chatTA" placeholder="코드 요청, 질문... (Enter 전송)" rows="1"
+            onkeydown="hk(event)" oninput="ar(this)"></textarea>
+          <button class="send-btn" onclick="sendChat()">↑</button>
+        </div>
+        <div class="chips">
+          <div class="chip" onclick="si('Todo 앱 만들어줘')">Todo 앱 만들어줘</div>
+          <div class="chip" onclick="si('에러 고쳐줘')">에러 고쳐줘</div>
+          <div class="chip" onclick="si('코드 설명해줘')">코드 설명해줘</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 말풍선 ─── -->
+  <div class="bubble-wrap" id="bubbleWrap">
+    <div class="bubble-tail"></div>
+    <div class="bubble-box">
+      <div class="bb-head">
+        <div class="bb-ava">M</div>
+        <div class="bb-title">AI 멘토</div>
+        <div class="bb-sub">— 궁금한 게 있으면 바로 물어보세요</div>
+        <button class="bb-x" onclick="closeBubble()">✕</button>
+      </div>
+      <div class="bb-msgs" id="bbMsgs"></div>
+      <div class="bb-inp">
+        <textarea class="bb-ta" id="bbTA" placeholder="멘토에게 질문..." rows="1"
+          onkeydown="handleBbKey(event)" oninput="ar(this)"></textarea>
+        <button class="bb-send" onclick="sendBubble()">↑</button>
+      </div>
+      <div class="bb-route">
+        <div class="bb-route-txt">대화를 이어가고 싶으면</div>
+        <button class="bb-route-btn" onclick="routeToChat()">챗으로 계속하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: IDE -->
+  <div class="right">
+    <div class="ide-tabs">
+      <div class="ide-tab ac" id="tabCode" onclick="switchTab('Code')">전체 코드</div>
+      <div class="ide-tab" id="tabResult" onclick="switchTab('Result')">실행 결과</div>
+      <div class="ide-tab" id="tabPreview" onclick="switchTab('Preview')">앱 프리뷰</div>
+      <button class="run-btn" onclick="runCode()">실행</button>
+    </div>
+    <div class="ide-body">
+      <div id="pCode" class="code-area">
+        <div style="color:#1a2535;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-style:italic;"># 챗에서 코드 요청 후 자동 반영됩니다<br><br>← 채팅창에서 요청해보세요</div>
+      </div>
+      <div id="pResult" class="hidden" style="flex:1;display:flex;flex-direction:column;">
+        <div class="out-strip" style="flex:1;">
+          <div class="out-hd"><div class="out-dot" style="background:#1a2535;"></div><div class="out-lbl">실행 전</div></div>
+          <div class="out-body"><div class="out-empty" id="outTxt">▶ 실행 버튼을 누르면 결과가 나타납니다</div></div>
+        </div>
+      </div>
+      <div id="pPreview" class="hidden prev-area">
+        <div class="mini-app">
+          <div class="app-h">📝 AI 생성 Todo 앱</div>
+          <div class="app-row"><div class="app-f">새 할 일 입력...</div><button class="app-add">추가</button></div>
+          <div class="tr"><div class="tc ton"></div><div class="tt tdone">7강 수강 완료</div></div>
+          <div class="tr"><div class="tc toff"></div><div class="tt">실습 코드 실행하기</div></div>
+          <div class="tr"><div class="tc toff"></div><div class="tt">결과 제출하기</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── TOC ── */
+let tocOpen=false;
+function toggleTOC(){
+  tocOpen=!tocOpen;
+  document.getElementById('tocD').classList.toggle('open',tocOpen);
+  document.getElementById('tocOv').style.display=tocOpen?'block':'none';
+}
+
+/* ── VOICE ── */
+let voiceOn=true;
+function toggleVoice(){
+  voiceOn=!voiceOn;
+  document.getElementById('vdot').classList.toggle('off',!voiceOn);
+  document.getElementById('vtext').textContent=voiceOn?'보이스 재생 중':'일시정지됨';
+}
+
+/* ── 말풍선 위치 계산 ── */
+function positionBubble(){
+  const strip=document.getElementById('mentorStrip');
+  const ws=document.getElementById('ws');
+  const stripRect=strip.getBoundingClientRect();
+  const wsRect=ws.getBoundingClientRect();
+  const bubble=document.getElementById('bubbleWrap');
+  // 스트립 중앙 높이에 맞춤
+  const top=stripRect.top - wsRect.top + (stripRect.height/2) - 28;
+  bubble.style.top=Math.max(8, top)+'px';
+}
+
+/* ── 말풍선 open/close ── */
+let bubbleOpen=false;
+let mentorHistory=[];
+
+function openBubble(){
+  positionBubble();
+  bubbleOpen=true;
+  document.getElementById('bubbleWrap').classList.add('open');
+  setTimeout(()=>document.getElementById('bbTA').focus(),150);
+}
+function closeBubble(){
+  bubbleOpen=false;
+  document.getElementById('bubbleWrap').classList.remove('open');
+}
+function toggleBubble(){
+  if(bubbleOpen) closeBubble(); else openBubble();
+}
+
+/* ── 멘토 스트립 ── */
+let slideN=7;
+let curAct='code';
+const mentorData={
+  7:{msg:'<strong>print()</strong>은 가장 기본적인 출력 함수예요. 직접 실행해볼까요?',cta:'실행해볼게요',act:'code'},
+  8:{msg:'Agent의 핵심은 <strong>반복 루프</strong>예요. 직접 만들어볼까요?',cta:'만들어볼게요',act:'code'},
+};
+setTimeout(()=>showMentor(mentorData[7]),2800);
+
+function showMentor({msg,cta,act}){
+  document.getElementById('msPreview').innerHTML=msg;
+  document.getElementById('msCTA').textContent=(cta||'해볼게요')+' →';
+  curAct=act||'code';
+  document.getElementById('mentorStrip').classList.add('show');
+  // 말풍선에도 첫 멘토 메시지 추가
+  addBubbleMsg('ai', msg);
+  positionBubble();
+}
+function hideMentor(){
+  document.getElementById('mentorStrip').classList.remove('show');
+  closeBubble();
+  mentorHistory=[];
+  document.getElementById('bbMsgs').innerHTML='';
+}
+function mentorAction(){
+  if(curAct==='code'){
+    si('print("Hello, AI Agent!") 실행하면 어떤 결과가 나와?');
+    if(voiceOn)toggleVoice();
+    hideMentor();
+    setTimeout(()=>document.getElementById('chatTA').focus(),50);
+  } else if(curAct==='next'){
+    hideMentor(); navS(1);
+  }
+}
+
+/* ── 말풍선 메시지 ── */
+function addBubbleMsg(role, text){
+  const msgs=document.getElementById('bbMsgs');
+  if(role==='ai'){
+    msgs.innerHTML+=`<div class="bm"><div class="bm-ai-ava">M</div><div class="bm-bub bm-ai">${text}</div></div>`;
+  } else {
+    msgs.innerHTML+=`<div class="bm bm-me-row"><div class="bm-me-ava">나</div><div class="bm-bub bm-me">${text}</div></div>`;
+  }
+  msgs.scrollTop=9999;
+}
+
+function handleBbKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendBubble();}}
+function sendBubble(){
+  const ta=document.getElementById('bbTA');
+  const text=ta.value.trim();if(!text)return;
+  ta.value='';ta.style.height='auto';
+  addBubbleMsg('user',text);
+  mentorHistory.push({role:'user',text});
+  const tid='bty_'+Date.now();
+  document.getElementById('bbMsgs').innerHTML+=`<div class="bm" id="${tid}"><div class="bm-ai-ava">M</div><div class="bm-bub bm-ai"><div class="bm-typing"><div class="bm-dot"></div><div class="bm-dot"></div><div class="bm-dot"></div></div></div></div>`;
+  document.getElementById('bbMsgs').scrollTop=9999;
+  setTimeout(()=>{
+    document.getElementById(tid)?.remove();
+    const reply=getMentorReply(text);
+    addBubbleMsg('ai',reply);
+    mentorHistory.push({role:'ai',text:reply});
+  },650);
+}
+
+/* 챗으로 라우팅 */
+function routeToChat(){
+  closeBubble();
+  if(mentorHistory.length===0) return;
+  const msgs=document.getElementById('chatMsgs');
+  // 구분선
+  msgs.innerHTML+=`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;margin:2px 0;"><div style="flex:1;height:1px;background:#0e1e10;"></div><div style="font-size:7.5px;color:#1a3020;white-space:nowrap;padding:0 8px;">AI 멘토와의 대화</div><div style="flex:1;height:1px;background:#0e1e10;"></div></div>`;
+  mentorHistory.forEach(h=>{
+    if(h.role==='user'){
+      msgs.innerHTML+=`<div class="msg mer"><div class="ava av-me">나</div><div class="b-me bub">${h.text}</div></div>`;
+    } else {
+      msgs.innerHTML+=`<div class="msg"><div class="ava" style="background:#0c1e10;color:#6ee7b7;width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;font-family:Syne,sans-serif;">M</div><div style="background:#0a1a0d;border:1px solid #1a3020;border-top-left-radius:2px;color:#5a9070;" class="bub">${h.text}</div></div>`;
+    }
+  });
+  msgs.scrollTop=9999;
+  mentorHistory=[];
+  document.getElementById('bbMsgs').innerHTML='';
+  document.getElementById('chatTA').focus();
+}
+
+/* 멘토 답변 */
+function getMentorReply(text){
+  if(text.includes('print')||text.includes('출력'))
+    return '<strong>print()</strong>는 Python에서 화면에 값을 출력하는 함수예요.<br>print("텍스트") 형태로 쓰면 큰따옴표 안의 내용이 콘솔에 나타나요.';
+  if(text.includes('함수')||text.includes('def'))
+    return '함수는 특정 작업을 하는 코드 묶음이에요.<br><code style="font-family:IBM Plex Mono;font-size:9px;background:#060e08;padding:1px 4px;border-radius:2px;color:#6ee7b7;">def 이름():</code>로 정의하고 반복 사용할 수 있어요.';
+  if(text.includes('Agent')||text.includes('에이전트'))
+    return 'AI Agent는 <strong>목표를 향해 스스로 판단하고 행동하는 AI</strong>예요.<br>단순 답변이 아니라 여러 단계를 계획하고 실행해요.';
+  return `슬라이드 ${slideN} 기준으로 답변드릴게요!<br>더 구체적으로 어떤 부분이 궁금하신가요?`;
+}
+
+/* ── SLIDE ── */
+function navS(d){
+  slideN=Math.max(1,Math.min(19,slideN+d));
+  document.getElementById('snum').textContent=slideN;
+  document.getElementById('scn').textContent=slideN+' / 19';
+  document.getElementById('vhCtx').textContent=`슬라이드 ${slideN} 연동`;
+  hideMentor();
+  const m=mentorData[slideN];
+  if(m)setTimeout(()=>showMentor(m),1800);
+}
+function markDone(){
+  const b=document.getElementById('doneBtn');
+  b.textContent='✓ 완료됨';b.style.background='#22c55e';b.style.color='#060a10';
+  setTimeout(()=>{
+    showMentor({msg:'잘 하셨어요! 🎉 다음 슬라이드로 넘어갈까요?',cta:'다음으로',act:'next'});
+  },400);
+}
+
+/* ── INSERT ── */
+function insertCode(){
+  const el=document.getElementById('cel');
+  el.classList.add('cflash');setTimeout(()=>el.classList.remove('cflash'),350);
+  si('print("Hello, AI Agent!") 실행하면 어떤 결과가 나와?');
+  if(voiceOn)toggleVoice();
+  setTimeout(()=>document.getElementById('chatTA').focus(),50);
+}
+function insertPrompt(){
+  si('이 코드가 실행되면 어떤 결과가 나오나요?');
+  if(voiceOn)toggleVoice();
+  setTimeout(()=>document.getElementById('chatTA').focus(),50);
+}
+
+/* ── CHAT ── */
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,72)+'px';}
+function si(t){const ta=document.getElementById('chatTA');ta.value=t;ar(ta);}
+
+let hasCode=false;
+function sendChat(){
+  const ta=document.getElementById('chatTA');
+  const text=ta.value.trim();if(!text)return;
+  ta.value='';ta.style.height='auto';
+  const msgs=document.getElementById('chatMsgs');
+  msgs.innerHTML+=`<div class="msg mer"><div class="ava av-me">나</div><div class="b-me bub">${text.replace(/\n/g,'<br>')}</div></div>`;
+  const tid='ty_'+Date.now();
+  msgs.innerHTML+=`<div class="msg" id="${tid}"><div class="ava av-ai">AI</div><div class="b-ai bub"><div class="typing-r"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div></div>`;
+  msgs.scrollTop=9999;
+  setTimeout(()=>{
+    document.getElementById(tid)?.remove();
+    let reply='',code='',hasNew=false;
+    if(text.includes('print')||text.includes('실행')||text.includes('결과')){
+      reply=`<code style="background:#04060e;padding:1px 5px;border-radius:3px;font-family:IBM Plex Mono,monospace;color:#6ee7b7;font-size:9px;">print()</code>는 괄호 안의 값을 콘솔에 출력해요.<br>실행하면 → <code style="background:#04060e;padding:1px 5px;border-radius:3px;font-family:IBM Plex Mono,monospace;color:#6ee7b7;font-size:9px;">Hello, AI Agent!</code>`;
+      code=`<span style="color:#1e2d40"># AI 생성 · 슬라이드 ${slideN}</span>\n<span style="color:#b04040">print</span>(<span style="color:#4a80b0">"Hello, AI Agent!"</span>)`;
+      hasNew=true;
+    } else if(text.includes('Todo')||text.includes('todo')||text.includes('앱')){
+      reply='Todo 앱을 만들었어요! 아래에서 실행해보세요.';
+      code=`<span style="color:#1e2d40"># Todo App</span>\ntasks=[]\n<span style="color:#b04040">def</span> <span style="color:#7070c0">add</span>(t): tasks.append(t); <span style="color:#b04040">print</span>(<span style="color:#4a80b0">f"추가: {t}"</span>)\n<span style="color:#b04040">def</span> <span style="color:#7070c0">show</span>():\n  <span style="color:#b04040">for</span> i,t <span style="color:#b04040">in</span> <span style="color:#7070c0">enumerate</span>(tasks,1): <span style="color:#b04040">print</span>(<span style="color:#4a80b0">f"{i}. {t}"</span>)\nadd(<span style="color:#4a80b0">"실습 완료하기"</span>); show()`;
+      hasNew=true;
+    } else {
+      reply=`슬라이드 ${slideN} 기준으로 도와드릴게요! 코드로 만들어드릴 수 있어요.`;
+    }
+    let html=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">${reply}`;
+    if(hasNew){
+      html+=`<div class="code-bub">${code}</div><div class="apply-tag" onclick="applyIDE(\`${code.replace(/`/g,"'")}\`)">→ IDE에 반영됨</div>`;
+      applyIDE(code);
+    }
+    html+=`</div></div>`;
+    msgs.innerHTML+=html;
+    msgs.scrollTop=9999;
+  },680);
+}
+
+/* ── IDE ── */
+function applyIDE(code){
+  hasCode=true;
+  const p=document.getElementById('pCode');
+  p.innerHTML=code;
+  p.classList.add('iflash');
+  setTimeout(()=>p.classList.remove('iflash'),800);
+  document.getElementById('tabCode').classList.add('badge');
+  switchTab('Code');
+  setTimeout(()=>document.getElementById('tabCode').classList.remove('badge'),2500);
+}
+function runCode(){
+  if(!hasCode){
+    const m=document.getElementById('chatMsgs');
+    m.innerHTML+=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">먼저 슬라이드 코드를 클릭하거나 코드를 요청해보세요!</div></div>`;
+    m.scrollTop=9999;return;
+  }
+  document.querySelector('#pResult .out-hd').innerHTML=`<div class="out-dot" style="background:#22c55e;"></div><div class="out-lbl">실행 완료</div>`;
+  const ot=document.getElementById('outTxt');
+  ot.innerHTML=`<span style="color:#3a8050;">Hello, AI Agent!</span>`;
+  ot.style.fontStyle='normal';
+  switchTab('Result');
+  setTimeout(()=>{
+    showMentor({msg:'🎉 실행 성공! <strong>Hello, AI Agent!</strong> 출력됐어요.<br>메시지를 직접 바꿔볼까요?',cta:'수정해볼게요',act:'modify'});
+    document.getElementById('msCTA').onclick=()=>{
+      hideMentor();
+      si('출력 메시지를 "안녕, AI 세계!"로 바꿔줘');
+      document.getElementById('chatTA').focus();
+    };
+  },500);
+}
+function switchTab(n){
+  ['Code','Result','Preview'].forEach(x=>{
+    document.getElementById('tab'+x).className='ide-tab'+(x===n?' ac':'');
+    document.getElementById('p'+x).classList.toggle('hidden',x!==n);
+  });
+}
+
+/* 윈도우 리사이즈 시 말풍선 재배치 */
+window.addEventListener('resize',()=>{if(bubbleOpen)positionBubble();});
+</script>
+</body>
+</html>

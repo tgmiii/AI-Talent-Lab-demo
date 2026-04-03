@@ -53,7 +53,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
    LEFT PANEL
    スライド / メンタートリガー / バイブコーディングチャット
 ───────────────────────────── */
-.left{width:55%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#0a0d16;overflow:hidden;}
+.left{width:48%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #141c2c;background:#0a0d16;overflow:hidden;}
 
 /* スライド 16:9 */
 .slide-wrap{flex-shrink:0;display:flex;flex-direction:column;background:#0d1120;}
@@ -141,6 +141,18 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
   padding:2px;transition:color .12s;flex-shrink:0;
 }
 .ms-close:hover{color:#3a6040;}
+
+/* 再表示ボタン */
+.mentor-reopen{
+  position:fixed;bottom:8px;left:8px;z-index:25;
+  width:32px;height:32px;border-radius:10px;
+  background:#0c1e10;border:1.5px solid #246040;
+  display:none;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#6ee7b7;
+  cursor:pointer;transition:all .15s;
+}
+.mentor-reopen:hover{border-color:#6ee7b7;background:#0e2812;}
+.mentor-reopen.visible{display:flex;}
 
 /* ─────────────────────────────
    吹き出し
@@ -285,12 +297,42 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
 .chat-ta::placeholder{color:#ccc;}
 .send-btn{width:28px;height:28px;background:#142040;border:none;border-radius:7px;color:#4a80d0;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;}
 .send-btn:hover{background:#2060d0;color:#fff;}
-.chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;padding-left:36px;}
 .chip{background:#0d1322;border:1px solid #141c2c;border-radius:4px;padding:2px 8px;font-size:8px;color:#fff;cursor:pointer;transition:all .12s;}
 .chip:hover{border-color:#1a3050;color:#4a80d0;}
 
 /* ── RIGHT: IDE ── */
 .right{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0;}
+
+/* ── RIGHT TOP: 用語辞典 & ラインヒント ── */
+.right-top{height:30%;flex-shrink:0;display:flex;border-bottom:1.5px solid #1a2540;overflow:hidden;}
+.rpanel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.rpanel+.rpanel{border-left:1px solid #141c2c;}
+.rp-head{height:30px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#0a0e18;border-bottom:1px solid #141c2c;flex-shrink:0;}
+.rp-icon{font-size:13px;}
+.rp-title{font-size:9.5px;font-weight:700;color:#c0cce0;letter-spacing:.02em;}
+.rp-body{flex:1;overflow-y:auto;padding:10px 12px;font-size:9.5px;line-height:1.7;color:#5a6a88;}
+.rp-body::-webkit-scrollbar{width:2px;}
+.rp-body::-webkit-scrollbar-thumb{background:#141c2c;}
+
+/* 用語辞典パネル */
+.term-item{background:#0d1322;border:1px solid #1a2540;border-radius:6px;padding:8px 10px;margin-bottom:6px;transition:border-color .15s;}
+.term-item:hover{border-color:#3a70c0;}
+.term-kw{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6ee7b7;font-weight:500;margin-bottom:3px;}
+.term-desc{font-size:9px;color:#8090a8;line-height:1.6;}
+.term-usage{font-size:8px;color:#4a6a80;margin-top:3px;font-style:italic;}
+
+/* ラインヒント（コード行ホバー） */
+.line-hint-tooltip{
+  position:fixed;z-index:100;
+  background:#0c1e10;border:1.5px solid #246040;border-radius:6px;
+  padding:5px 10px;font-size:9px;color:#6ee7b7;
+  pointer-events:none;opacity:0;transition:opacity .15s;
+  max-width:300px;white-space:nowrap;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
+}
+.line-hint-tooltip.show{opacity:1;}
+.right-bottom{flex:1;display:flex;flex-direction:column;min-height:0;}
 .ide-tabs{display:flex;background:#080c14;border-bottom:1px solid #141c2c;flex-shrink:0;}
 .ide-tab{padding:9px 16px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:#fff;border-bottom:2px solid transparent;cursor:pointer;transition:all .12s;}
 .ide-tab:hover{color:#3a4a60;}
@@ -341,7 +383,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
       <div class="vdot" id="vdot"></div>
       <div class="vtext" id="vtext">ボイス再生中</div>
     </div>
-    <div class="sbadge">スライド <strong id="snum">7</strong> / 19</div>
+    <div class="sbadge">講義 <strong id="snum">7</strong> / 19</div>
   </div>
 </div>
 
@@ -379,7 +421,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
         <video
           id="lessonVideo"
           src="Lesson2_AI_Agent_1080p.mp4"
-          style="width:100%;height:calc((100vh - 44px) * 0.47);display:block;object-fit:contain;"
+          style="width:100%;height:calc((100vh - 44px) * 0.52);display:block;object-fit:contain;"
           controls
           controlsList="nodownload"
           preload="metadata"
@@ -397,10 +439,6 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
           <div><span class="cm"># Hello, AI Agent!</span></div>
           <div><span class="kw">print</span>(<span class="str">"Hello, AI Agent!"</span>)</div>
         </div>
-        <div class="sel sprompt" onclick="insertPrompt()">
-          <div class="shint">チャットへ →</div>
-          <div class="spt">💬 「このコードを実行するとどうなる？」</div>
-        </div>
       </div>
 
     </div>
@@ -417,6 +455,8 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
       <button class="scbtn" onclick="navS(1)">›</button>
       <button class="donebtn" id="doneBtn" onclick="markDone()">✓ 完了</button>
     </div>
+
+    <div class="mentor-reopen" id="mentorReopen" onclick="reopenMentor()" title="メンターを再表示">M</div>
 
     <div class="mentor-strip" id="mentorStrip">
       <div class="ms-inner">
@@ -438,12 +478,12 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
         <div class="vh-icon">AI</div>
         <div class="vh-title">バイブコーディング チャット</div>
         <div class="vh-role">コード生成 · 実行 · 修正</div>
-        <div class="vh-ctx" id="vhCtx">スライド 7 連動</div>
+        <div class="vh-ctx" id="vhCtx">講義 7 連動</div>
       </div>
       <div class="chat-msgs" id="chatMsgs">
         <div class="msg">
           <div class="ava av-ai">AI</div>
-          <div class="b-ai bub">こんにちは！<br>コードの生成、実行、修正をお手伝いします。<br>左側のスライドをクリックするか、直接リクエストしてみてください。<br><span style="font-size:8.5px;color:#fff;display:block;margin-top:4px;">講義内容について知りたい場合はAIメンターに聞いてみてください → メンターバーの「質問する」</span></div>
+          <div class="b-ai bub">こんにちは！<br>コードの生成、実行、修正をお手伝いします。<br>左側のコードをクリックするか、直接リクエストしてみてください。<br><span style="font-size:8.5px;color:#fff;display:block;margin-top:4px;">講義内容について知りたい場合はAIメンターに聞いてみてください → メンターバーの「質問する」</span></div>
         </div>
       </div>
       <div class="inp-area">
@@ -456,6 +496,7 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
           <div class="chip" onclick="si('Todoアプリ作って')">Todoアプリ作って</div>
           <div class="chip" onclick="si('エラー修正')">エラー修正</div>
           <div class="chip" onclick="si('コード説明')">コード説明</div>
+          <div class="chip" onclick="si('このコードを実行するとどうなる？')">実行するとどうなる？</div>
         </div>
       </div>
     </div>
@@ -483,30 +524,88 @@ html,body{height:100%;background:#080b12;font-family:'Noto Sans KR',sans-serif;o
   </div>
 
   <div class="right">
-    <div class="ide-tabs">
-      <div class="ide-tab ac" id="tabCode" onclick="switchTab('Code')">全コード</div>
-      <div class="ide-tab" id="tabResult" onclick="switchTab('Result')">実行結果</div>
-      <div class="ide-tab" id="tabPreview" onclick="switchTab('Preview')">アプリプレビュー</div>
-      <button class="run-btn" onclick="runCode()">実行</button>
-    </div>
-    <div class="ide-body">
-      <div id="pCode" class="code-area" contenteditable="true" spellcheck="false">
-        <div style="color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-style:italic;"># チャットでコードリクエスト後に自動反映されます<br><br>← チャットウィンドウでリクエストしてください</div>
-      </div>
-      <div class="code-err" id="codeErr"></div>
-      <div id="pResult" class="hidden" style="flex:1;display:flex;flex-direction:column;">
-        <div class="out-strip" style="flex:1;">
-          <div class="out-hd"><div class="out-dot" style="background:#1a2535;"></div><div class="out-lbl">実行前</div></div>
-          <div class="out-body"><div class="out-empty" id="outTxt">▶ 実行ボタンを押すと結果が表示されます</div></div>
+
+    <!-- ── 上30%: 基本用語辞典 & ラインヒント ── -->
+    <div class="right-top">
+      <div class="rpanel">
+        <div class="rp-head">
+          <span class="rp-icon">📖</span>
+          <span class="rp-title">基本用語辞典</span>
+        </div>
+        <div class="rp-body" id="termBody">
+          <div class="term-item">
+            <div class="term-kw">print()</div>
+            <div class="term-desc">画面に値を出力する組み込み関数。デバッグや結果確認に最も多く使われます。</div>
+            <div class="term-usage">活用: print("こんにちは") → こんにちは と表示</div>
+          </div>
+          <div class="term-item">
+            <div class="term-kw">" " (文字列)</div>
+            <div class="term-desc">ダブルクォーテーションで囲んだテキストデータ。シングルクォーテーション ' ' でも同じです。</div>
+            <div class="term-usage">活用: "Hello" → 文字列として扱われる</div>
+          </div>
+          <div class="term-item">
+            <div class="term-kw">変数 (Variable)</div>
+            <div class="term-desc">データを保存する名前付きの箱。= で値を代入します。</div>
+            <div class="term-usage">活用: name = "AI" → name に "AI" を保存</div>
+          </div>
+          <div class="term-item">
+            <div class="term-kw">def (関数定義)</div>
+            <div class="term-desc">繰り返し使うコードのまとまりに名前を付ける構文。</div>
+            <div class="term-usage">活用: def greet(): print("Hi") → greet() で呼び出し</div>
+          </div>
+          <div class="term-item">
+            <div class="term-kw"># (コメント)</div>
+            <div class="term-desc"># 以降の行は実行されないメモ。コードの説明に使います。</div>
+            <div class="term-usage">活用: # ここは挨拶を表示する部分</div>
+          </div>
+          <div class="term-item">
+            <div class="term-kw">( ) (括弧)</div>
+            <div class="term-desc">関数呼び出しに使う記号。引数（渡したい値）をこの中に書きます。</div>
+            <div class="term-usage">活用: print("値") → "値" が引数</div>
+          </div>
         </div>
       </div>
-      <div id="pPreview" class="hidden prev-area">
-        <div class="mini-app">
-          <div class="app-h">📝 AI生成 Todoアプリ</div>
-          <div class="app-row"><div class="app-f">新しいタスクを入力...</div><button class="app-add">追加</button></div>
-          <div class="tr"><div class="tc ton"></div><div class="tt tdone">7講受講完了</div></div>
-          <div class="tr"><div class="tc toff"></div><div class="tt">実習コード実行</div></div>
-          <div class="tr"><div class="tc toff"></div><div class="tt">結果提出</div></div>
+      <div class="rpanel">
+        <div class="rp-head">
+          <span class="rp-icon">💡</span>
+          <span class="rp-title">ラインヒント</span>
+        </div>
+        <div class="rp-body" id="hintBody">
+          <div style="color:#5a6a88;font-size:9px;text-align:center;padding:16px 0;font-style:italic;">
+            全コードの各行にマウスを当てると<br>AIがその行の意味を一行で解説します
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="line-hint-tooltip" id="lineHint"></div>
+
+    <!-- ── 下70%: 既存IDE ── -->
+    <div class="right-bottom">
+      <div class="ide-tabs">
+        <div class="ide-tab ac" id="tabCode" onclick="switchTab('Code')">全コード</div>
+        <div class="ide-tab" id="tabResult" onclick="switchTab('Result')">実行結果</div>
+        <div class="ide-tab" id="tabPreview" onclick="switchTab('Preview')">アプリプレビュー</div>
+        <button class="run-btn" onclick="runCode()">実行</button>
+      </div>
+      <div class="ide-body">
+        <div id="pCode" class="code-area" contenteditable="true" spellcheck="false">
+          <div style="color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-style:italic;"># チャットでコードリクエスト後に自動反映されます<br><br>← チャットウィンドウでリクエストしてください</div>
+        </div>
+        <div class="code-err" id="codeErr"></div>
+        <div id="pResult" class="hidden" style="flex:1;display:flex;flex-direction:column;">
+          <div class="out-strip" style="flex:1;">
+            <div class="out-hd"><div class="out-dot" style="background:#1a2535;"></div><div class="out-lbl">実行前</div></div>
+            <div class="out-body"><div class="out-empty" id="outTxt">▶ 実行ボタンを押すと結果が表示されます</div></div>
+          </div>
+        </div>
+        <div id="pPreview" class="hidden prev-area">
+          <div class="mini-app">
+            <div class="app-h">📝 AI生成 Todoアプリ</div>
+            <div class="app-row"><div class="app-f">新しいタスクを入力...</div><button class="app-add">追加</button></div>
+            <div class="tr"><div class="tc ton"></div><div class="tt tdone">7講受講完了</div></div>
+            <div class="tr"><div class="tc toff"></div><div class="tt">実習コード実行</div></div>
+            <div class="tr"><div class="tc toff"></div><div class="tt">結果提出</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -569,19 +668,34 @@ const mentorData={
 setTimeout(()=>showMentor(mentorData[7]),2800);
 
 function showMentor({msg,cta,act}){
+  lastMentorData={msg,cta,act};
   document.getElementById('msPreview').innerHTML=msg;
   document.getElementById('msCTA').textContent=(cta||'やってみます')+' →';
   curAct=act||'code';
   document.getElementById('mentorStrip').classList.add('show');
+  document.getElementById('mentorReopen').classList.remove('visible');
   addBubbleMsg('ai', msg);
   positionBubble();
 }
+
+let lastMentorData=null;
 
 function hideMentor(){
   document.getElementById('mentorStrip').classList.remove('show');
   closeBubble();
   mentorHistory=[];
   document.getElementById('bbMsgs').innerHTML='';
+  document.getElementById('mentorReopen').classList.add('visible');
+}
+
+function reopenMentor(){
+  document.getElementById('mentorReopen').classList.remove('visible');
+  if(lastMentorData){
+    showMentor(lastMentorData);
+  } else {
+    const m=mentorData[slideN];
+    if(m) showMentor(m);
+  }
 }
 
 function mentorAction(){
@@ -650,7 +764,7 @@ function getMentorReply(text){
   if(text.includes('print')||text.includes('出力')) return '<strong>print()</strong>はPythonで画面に値を出力する関数です。<br>print("テキスト")の形で使うと、ダブルクォーテーションの中身がコンソールに表示されます。';
   if(text.includes('関数')||text.includes('def')) return '関数は特定の作業を行うコードのまとまりです。<br><code style="font-family:IBM Plex Mono;font-size:9px;background:#060e08;padding:1px 4px;border-radius:2px;color:#6ee7b7;">def 名前():</code>で定義して繰り返し使用できます。';
   if(text.includes('Agent')||text.includes('エージェント')) return 'AI Agentは<strong>目標に向かって自ら判断し行動するAI</strong>です。<br>単純な回答だけでなく、複数の段階を計画して実行します。';
-  return `スライド ${slideN} を基準にお答えしますね！<br>より具体的にどの部分が気になりますか？`;
+  return `この講義の内容を基準にお答えしますね！<br>より具体的にどの部分が気になりますか？`;
 }
 
 /* ── SLIDE ── */
@@ -658,7 +772,7 @@ function navS(d){
   slideN=Math.max(1,Math.min(19,slideN+d));
   document.getElementById('snum').textContent=slideN;
   document.getElementById('scn').textContent=slideN+' / 19';
-  document.getElementById('vhCtx').textContent=`スライド ${slideN} 連動`;
+  document.getElementById('vhCtx').textContent=`講義 ${slideN} 連動`;
   hideMentor();
   const m=mentorData[slideN];
   if(m) setTimeout(()=>showMentor(m),600);
@@ -691,64 +805,116 @@ function sendChat(){
   const msgs=document.getElementById('chatMsgs');
   msgs.innerHTML+=`<div class="msg mer"><div class="ava av-me">私</div><div class="b-me bub">${v}</div></div>`;
   msgs.scrollTop=9999;
-  
+
   const tid='ty_'+Date.now();
   msgs.innerHTML+=`<div class="msg" id="${tid}"><div class="ava av-ai">AI</div><div class="b-ai bub"><div class="typing-r"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div></div>`;
   msgs.scrollTop=9999;
 
   setTimeout(()=>{
     document.getElementById(tid)?.remove();
-    let reply="リクエストされた内容を確認しました。";
-    let code="";
+    let reply='';
+    let code='';
     let hasNew=false;
+    const cur=hasCode?document.getElementById('pCode').innerText.trim():'';
 
+    /* ── コード変更リクエスト ── */
     if(v.includes('変えて')||v.includes('変更して')||v.includes('修正して')){
-      const m=v.match(/[「「](.+?)[」」]/);
+      const m=v.match(/[「｢](.+?)[」｣]/);
       const newMsg=m?m[1]:'こんにちは、AIの世界！';
       reply=`出力メッセージを「${newMsg}」に変更しました。`;
       code=`print("${newMsg}")`;
       hasNew=true;
-    } else if(v.includes('Hello')||v.includes('안녕')||v.includes('こんにちは')){
-      reply="Hello, AI Agent! を出力するコードを作成しました。";
-      code='print("Hello, AI Agent!")';
+
+    /* ── Hello系コード生成 ── */
+    } else if(v.match(/print\s*\(/i)||v.includes('Hello')||v.includes('こんにちは')){
+      const pm=v.match(/print\s*\(\s*["'](.+?)["']\s*\)/);
+      const msg=pm?pm[1]:'Hello, AI Agent!';
+      reply=`<strong>print("${msg}")</strong> を出力するコードを作成しました。<br>右側のIDEに反映され、自動で実行されます。`;
+      code=`print("${msg}")`;
       hasNew=true;
-    } else if(v.includes('説明して')||v.includes('説明')){
-      const cur=document.getElementById('pCode').textContent.trim();
+
+    /* ── コード説明 ── */
+    } else if(v.includes('説明して')||v.includes('説明')||v.includes('コード説明')){
       if(cur&&hasCode){
-        const pm=cur.match(/print\(["'](.+?)["']\)/);
-        if(pm){
-          reply=`<strong>コード説明：</strong><br><br><code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">print("${pm[1]}")</code><br><br><strong>print()</strong> はPythonの組み込み関数で、括弧内の値をコンソール（出力画面）に表示します。<br>ここでは文字列 <strong>"${pm[1]}"</strong> を画面に出力しています。<br><br>・<strong>print()</strong> — 出力関数<br>・<strong>" "</strong> で囲まれた部分 — 文字列（テキストデータ）`;
-        } else {
-          reply=`<strong>コード説明：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">${cur}</code><br><br>このコードはPythonで記述されています。実行すると結果が右側の「実行結果」タブに表示されます。`;
-        }
+        const lines=cur.split('\n').filter(l=>l.trim());
+        reply='<strong>コード説明：</strong><br><br>';
+        lines.forEach(line=>{
+          const hint=getLineHint(line.trim());
+          reply+=`<code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:1px 5px;border-radius:3px;color:#6ee7b7;">${line.trim().replace(/</g,'&lt;')}</code><br>→ ${hint}<br><br>`;
+        });
       } else {
-        reply="まだコードがありません。スライドのコードをクリックするか、コードをリクエストしてから「コード説明」を試してみてください。";
+        reply='まだコードがありません。左側のコードをクリックするか、コードをリクエストしてください。';
       }
-    } else if(v.includes('エラー')||v.includes('直して')){
-      const cur=document.getElementById('pCode').textContent.trim();
+
+    /* ── エラー修正 ── */
+    } else if(v.includes('エラー')||v.includes('直して')||v.includes('修正')){
       if(cur&&hasCode){
-        const chk=checkCode(cur);
+        const chk=simulatePython(cur);
         if(!chk.ok){
-          const fixCode=chk.fix||'print("Hello, AI Agent!")';
-          const esc=fixCode.replace(/`/g,"'").replace(/"/g,'&quot;');
-          reply=`<strong>エラー検出：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#1a0808;padding:2px 5px;border-radius:3px;color:#ff6060;">${cur}</code><br><br>❌ <span style="color:#ff6060;">${chk.msg}</span><br><br><strong>修正後のコード：</strong><div class="code-bub" style="border-color:#22c55e;">${fixCode}</div><div class="fix-btn" onclick="applyIDE(\`${esc}\`);hideCodeError();">→ 修正を反映する</div>`;
+          const fixed=tryFixCode(cur);
+          reply=`<strong>エラー検出：</strong><br><br>現在のコード：<code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#1a0808;padding:2px 5px;border-radius:3px;color:#ff6060;">${cur.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</code><br><br>❌ <span style="color:#ff6060;">${chk.msg.replace(/\n/g,'<br>')}</span>`;
+          if(fixed!==null){
+            const fixId='fix_'+Date.now();
+            window[fixId]=fixed;
+            const fixedEsc=fixed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+            reply+=`<br><br>✅ <strong>修正後のコード：</strong><div class="code-bub">${fixedEsc}</div><div class="apply-tag" onclick="applyIDE(window['${fixId}'])">→ 修正コードをIDEに反映</div>`;
+          }
         } else {
-          reply=`<strong>エラーチェック結果：</strong><br><br>現在のコード：<code style="font-family:'IBM Plex Mono',monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">${cur}</code><br><br>✅ <strong>構文エラーはありません。</strong><br>コードは正常に実行可能です。`;
+          reply=`<strong>エラーチェック結果：</strong><br>✅ 構文エラーはありません。コードは正常に実行可能です。`;
         }
       } else {
-        reply="まだコードがありません。まずはコードを作成してから「エラー修正」を試してみてください。";
+        reply='まだコードがありません。まずはコードを作成してから「エラー修正」を試してみてください。';
       }
-    } else if(v.includes('Todo')){
-      reply="簡単なTodoアプリの構造を作成しました。右側の「アプリプレビュー」を確認してください。";
+
+    /* ── 実行結果予測 ── */
+    } else if(v.includes('実行するとどうなる')||v.includes('実行したら')||v.includes('結果')){
+      if(cur&&hasCode){
+        const sim=simulatePython(cur);
+        if(sim.ok&&sim.output){
+          const escaped=sim.output.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+          reply=`<strong>実行結果の予測：</strong><br><br>このコードを実行すると：<br><strong style="color:#6ee7b7;">${escaped}</strong><br>と出力されます。<br><br><strong>仕組み：</strong> <code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:1px 4px;border-radius:3px;color:#6ee7b7;">print()</code> 関数が括弧内の文字列をコンソールに表示します。<br><br>▶ 右パネルの「▶ 実行」ボタンで実際に確認してみましょう。`;
+        } else if(!sim.ok){
+          reply=`<strong>実行結果の予測：</strong><br><br>現在のコードにはエラーがあります。<br>❌ ${sim.msg.replace(/\n/g,'<br>')}<br><br>「エラー修正」を試してみてください。`;
+        } else {
+          reply=`<strong>実行結果の予測：</strong><br>このコードは正常に処理されますが、画面への出力はありません。<br>print() を使って出力を追加してみましょう。`;
+        }
+      } else {
+        reply='まだコードがありません。左側のコードをクリックするか、コードをリクエストしてください。';
+      }
+
+    /* ── Todoアプリ ── */
+    } else if(v.includes('Todo')||v.includes('todo')||v.includes('アプリ')){
+      reply='簡単なTodoアプリの構造を作成しました。<br>右側の「アプリプレビュー」タブでデモを確認できます。<br><br>実際にPythonで作る場合は、リスト（配列）を使ってタスクを管理します。';
       document.getElementById('tabPreview').classList.add('badge');
+      code='# Todoアプリ\ntasks = []\ndef add(task):\n    tasks.append(task)\n    print(f"追加: {task}")\n\nadd("実習完了")\nprint(tasks)';
+      hasNew=true;
+
+    /* ── Python基礎知識の質問 ── */
+    } else if(v.includes('変数')||v.includes('variable')){
+      reply='<strong>変数（Variable）とは：</strong><br><br>データを保存する「名前付きの箱」です。<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">name = "AI Agent"</code><br>→ name という箱に "AI Agent" を保存<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">print(name)</code><br>→ AI Agent と出力されます';
+      code='name = "AI Agent"\nprint(name)';
+      hasNew=true;
+    } else if(v.includes('関数')||v.includes('def ')||v.includes('function')){
+      reply='<strong>関数（Function）とは：</strong><br><br>繰り返し使うコードに名前を付けたものです。<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">def greet(name):</code><br>→ greet という関数を定義<br><br>呼び出すときは <code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">greet("AI")</code> とします。';
+    } else if(v.includes('ループ')||v.includes('繰り返し')||v.includes('for')||v.includes('while')){
+      reply='<strong>ループ（繰り返し）とは：</strong><br><br>同じ処理を何度も実行する構文です。<br><br><strong>for文：</strong> 回数が決まっているとき<br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">for i in range(3): print(i)</code><br>→ 0, 1, 2 と出力<br><br><strong>while文：</strong> 条件が満たされる間実行します。';
+    } else if(v.includes('リスト')||v.includes('配列')||v.includes('list')){
+      reply='<strong>リスト（List）とは：</strong><br><br>複数のデータをまとめて管理する構造です。<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">fruits = ["apple", "banana"]</code><br>→ 2つの文字列を格納<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">print(fruits[0])</code> → apple';
+      code='fruits = ["apple", "banana", "cherry"]\nprint(fruits)\nprint(fruits[0])';
+      hasNew=true;
+    } else if(v.includes('if ')||v.includes('条件')||v.includes('分岐')){
+      reply='<strong>条件分岐（if文）とは：</strong><br><br>条件に応じて処理を変える構文です。<br><br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">if score >= 80:</code> → scoreが80以上なら実行<br><code style="font-family:IBM Plex Mono,monospace;font-size:9px;background:#060a10;padding:2px 5px;border-radius:3px;color:#6ee7b7;">else:</code> → それ以外の場合に実行';
+
+    /* ── 汎用応答 ── */
     } else {
-      reply="リクエストありがとうございます！AI Agentがその内容について分析し、最適なコードを提案します。";
+      reply=`ご質問ありがとうございます！<br><br>「${v}」について：この講義ではPythonの基本とAI Agentの仕組みを学んでいます。<br><br>以下のことをお手伝いできます：<br>・コードの生成と実行<br>・エラーの検出と修正<br>・Python基本概念の解説<br><br>具体的に何を試してみたいですか？`;
     }
 
     let html=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">${reply}`;
     if(hasNew){
-      html+=`<div class="code-bub">${code}</div><div class="apply-tag" onclick="applyIDE(\`${code.replace(/`/g,"'")}\`)">→ IDEに反映済み</div>`;
-      applyIDE(code);
+      const codeId='code_'+Date.now();
+      window[codeId]=code;
+      html+=`<div class="code-bub">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div><div class="apply-tag" onclick="applyIDE(window['${codeId}'])">→ IDEに反映</div>`;
     }
     html+=`</div></div>`;
     msgs.innerHTML+=html;
@@ -761,77 +927,312 @@ function applyIDE(code){
   hasCode=true;
   hideCodeError();
   const p=document.getElementById('pCode');
-  p.innerHTML=code;
+  p.innerText=code;
   p.classList.add('iflash');
+  setupLineHints();
   setTimeout(()=>p.classList.remove('iflash'),800);
   document.getElementById('tabCode').classList.add('badge');
   switchTab('Code');
   setTimeout(()=>document.getElementById('tabCode').classList.remove('badge'),2500);
+}
 
-  /* print文の中身を抽出して実行結果も自動更新 */
-  const pm=code.match(/print\(["'](.+?)["']\)/);
-  if(pm){
-    updateOutput(pm[1]);
-    setTimeout(()=>switchTab('Result'),900);
+/* ── コード自動修正 ── */
+function tryFixCode(code){
+  const lines=code.split('\n');
+  let fixed=[];
+  let changed=false;
+
+  for(let line of lines){
+    let t=line.trim();
+    if(!t||t.startsWith('#')){fixed.push(line);continue;}
+
+    /* 全角記号 → 半角 */
+    let r=t.replace(/（/g,'(').replace(/）/g,')').replace(/\u201C/g,'"').replace(/\u201D/g,'"').replace(/\u2018/g,"'").replace(/\u2019/g,"'");
+    if(r!==t){changed=true;t=r;}
+
+    /* print 括弧なし: print "hello" → print("hello") */
+    let m=t.match(/^print\s+(?!\()(.+)$/);
+    if(m){changed=true;fixed.push('print('+m[1]+')');continue;}
+
+    /* ── printを含む行を総合的に修正 ── */
+    if(t.match(/^print\s*\(/)){
+      /* 現在のクォート・括弧の状態を解析 */
+      const after=t.slice(t.indexOf('(')+1); /* ( 以降の文字列 */
+      let hasOpenQ=false, qChar='', qContent='', hasCloseQ=false, hasCloseParen=false;
+
+      /* クォート検出 */
+      const qm=after.match(/^(\s*)(["'])/);
+      if(qm){
+        qChar=qm[2];
+        const rest=after.slice(qm[0].length);
+        const closeIdx=rest.indexOf(qChar);
+        if(closeIdx>=0){
+          hasOpenQ=true; hasCloseQ=true;
+          qContent=rest.slice(0,closeIdx);
+          const afterQ=rest.slice(closeIdx+1).trim();
+          hasCloseParen=afterQ.includes(')');
+        } else {
+          hasOpenQ=true; hasCloseQ=false;
+          /* クォートが閉じていない — ) があるかチェック */
+          const parenIdx=rest.lastIndexOf(')');
+          if(parenIdx>=0){
+            qContent=rest.slice(0,parenIdx);
+          } else {
+            qContent=rest;
+          }
+          hasCloseParen=rest.includes(')');
+        }
+      }
+
+      if(hasOpenQ){
+        /* 正しい形に再構築: print("内容") */
+        const prefix=t.slice(0,t.indexOf('('));
+        const corrected=prefix+'('+qChar+qContent+qChar+')';
+        if(corrected!==t){
+          changed=true;
+          fixed.push(corrected);
+          continue;
+        }
+      } else {
+        /* クォートなしの場合: print(hello) はそのまま、括弧だけ修正 */
+        const openCount=(t.match(/\(/g)||[]).length;
+        const closeCount=(t.match(/\)/g)||[]).length;
+        if(openCount>closeCount){
+          changed=true;
+          fixed.push(t+')'.repeat(openCount-closeCount));
+          continue;
+        }
+      }
+    }
+
+    fixed.push(t);
   }
+
+  if(!changed) return null;
+  return fixed.join('\n');
 }
 
-/* ── コード検証 ── */
-function extractText(code){
-  /* コードの中から意図した文字列部分を抽出する */
-  const m=code.match(/["']([^"']+)["']/);
-  if(m) return m[1];
-  /* 引用符がない場合、print/prin等と括弧を除いた中身を取る */
-  const inner=code.replace(/^[a-zA-Z]+\s*\(?/,'').replace(/\)?\s*$/,'').replace(/["']/g,'').trim();
-  return inner||'Hello, AI Agent!';
-}
-
-function checkCode(code){
+/* ── Python簡易シミュレーター ── */
+function simulatePython(code){
   code=code.trim();
-  if(!code) return {ok:false, msg:'コードが空です。', fix:'print("Hello, AI Agent!")', errors:[]};
+  if(!code) return {ok:false, msg:'コードが空です。', output:'', errors:['コードが空です。']};
 
-  /* 正しい形: print("...") or print('...') */
-  const validPrint=/^print\(["'].*["']\)$/;
-  if(validPrint.test(code)) return {ok:true};
-
-  /* エラーを全て収集 */
+  const lines=code.split('\n').map(l=>l.trimEnd());
+  const output=[];
   const errors=[];
-  const text=extractText(code);
-  const correctCode=`print("${text}")`;
+  const variables={};
 
-  /* 関数名チェック */
-  const funcName=code.match(/^([a-zA-Z]+)/);
-  if(funcName&&funcName[1]!=='print'){
-    errors.push(`"${funcName[1]}" は定義されていません。正しくは → print`);
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i].trim();
+    if(!line||line.startsWith('#')) continue;
+    const lineNum=i+1;
+
+    try {
+      /* 変数代入: x = 値 */
+      const assignMatch=line.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
+      if(assignMatch && assignMatch[1]!=='print'){
+        const varName=assignMatch[1];
+        const val=evalExpr(assignMatch[2],variables);
+        variables[varName]=val;
+        continue;
+      }
+
+      /* print文 */
+      const printMatch=line.match(/^print\s*\((.+)\)$/s);
+      if(printMatch){
+        const inner=printMatch[1].trim();
+        const args=splitPrintArgs(inner);
+        const vals=args.map(a=>printVal(evalExpr(a.trim(),variables)));
+        output.push(vals.join(' '));
+        continue;
+      }
+
+      /* print括弧なし → エラー */
+      if(line.match(/^print\s+/)){
+        errors.push(`${lineNum}行目: 構文エラー — print() には括弧 ( ) が必要です`);
+        continue;
+      }
+
+      /* type() */
+      const typeMatch=line.match(/^type\s*\((.+)\)$/);
+      if(typeMatch){
+        const val=evalExpr(typeMatch[1].trim(),variables);
+        const t=typeof val==='number'?(Number.isInteger(val)?"<class 'int'>":"<class 'float'>"):typeof val==='string'?"<class 'str'>":typeof val==='boolean'?"<class 'bool'>":Array.isArray(val)?"<class 'list'>":"<class 'object'>";
+        output.push(t);
+        continue;
+      }
+
+      /* len() */
+      const lenMatch=line.match(/^len\s*\((.+)\)$/);
+      if(lenMatch){
+        const val=evalExpr(lenMatch[1].trim(),variables);
+        if(typeof val==='string'||Array.isArray(val)) output.push(String(val.length));
+        else { errors.push(`${lineNum}行目: 型エラー — このオブジェクトには len() を使えません`); continue; }
+        continue;
+      }
+
+      /* input() — スキップ */
+      if(line.match(/input\s*\(/)){
+        const inputAssign=line.match(/^([a-zA-Z_]\w*)\s*=\s*input\s*\(.*\)$/);
+        if(inputAssign){ variables[inputAssign[1]]=''; continue; }
+        continue;
+      }
+
+      /* 未知の関数呼び出し */
+      const funcCall=line.match(/^([a-zA-Z_]\w*)\s*\(/);
+      if(funcCall){
+        const fname=funcCall[1];
+        if(!['print','type','len','input','int','str','float','range','list','abs','max','min','sum','round','sorted','reversed','enumerate','zip','map','filter','open','help','dir'].includes(fname)){
+          errors.push(`${lineNum}行目: 名前エラー — '${fname}' は定義されていません`);
+          continue;
+        }
+      }
+
+      /* 未知の名前チェック */
+      const nameOnly=line.match(/^([a-zA-Z_]\w*)$/);
+      if(nameOnly && !(nameOnly[1] in variables)){
+        errors.push(`${lineNum}行目: 名前エラー — '${nameOnly[1]}' は定義されていません`);
+        continue;
+      }
+
+      /* 括弧の不一致 */
+      if(line.includes('(') && !line.includes(')')){
+        errors.push(`${lineNum}行目: 構文エラー — 閉じ括弧 ) がありません`);
+        continue;
+      }
+      if(!line.includes('(') && line.includes(')')){
+        errors.push(`${lineNum}行目: 構文エラー — 対応しない閉じ括弧 ) があります`);
+        continue;
+      }
+
+    } catch(e){
+      const msg=e.message||String(e);
+      /* エラーメッセージを日本語化 */
+      let jaMsg=msg
+        .replace(/NameError: name '(.+?)' is not defined/g, "名前エラー — '$1' は定義されていません")
+        .replace(/TypeError: unsupported operand type\(s\) for \+/g, "型エラー — + 演算子に対応していない型の組み合わせです")
+        .replace(/TypeError: object has no len\(\)/g, "型エラー — このオブジェクトには len() を使えません")
+        .replace(/ZeroDivisionError: division by zero/g, "ゼロ除算エラー — 0で割ることはできません");
+      errors.push(`${lineNum}行目: ${jaMsg}`);
+    }
   }
 
-  /* 開き括弧チェック */
-  if(!code.includes('(')){
-    errors.push('開き括弧 ( がありません');
+  if(errors.length>0){
+    return {ok:false, msg:errors.join('\n'), output:output.join('\n'), errors};
   }
+  return {ok:true, msg:'', output:output.join('\n'), errors:[]};
+}
 
-  /* 閉じ括弧チェック */
-  if(!code.endsWith(')')){
-    errors.push('閉じ括弧 ) がありません');
+/* print引数を分割（文字列リテラル内のカンマは無視） */
+function splitPrintArgs(s){
+  const args=[];let cur='';let inStr=false;let q='';let depth=0;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(inStr){
+      cur+=c;
+      if(c===q&&s[i-1]!=='\\') inStr=false;
+    } else {
+      if(c==='"'||c==="'"){inStr=true;q=c;cur+=c;}
+      else if(c==='('){depth++;cur+=c;}
+      else if(c===')'){depth--;cur+=c;}
+      else if(c===','&&depth===0){args.push(cur);cur='';}
+      else {cur+=c;}
+    }
   }
+  if(cur.trim()) args.push(cur);
+  return args;
+}
 
-  /* 引用符チェック */
-  const quotes=(code.match(/["']/g)||[]).length;
-  if(quotes<2){
-    errors.push('文字列を囲む引用符 "" が不足しています');
-  } else {
-    const open=(code.match(/\(["']/)||null);
-    const close=(code.match(/["']\)/)||null);
-    if(!open) errors.push('開き引用符の位置が正しくありません');
-    if(!close) errors.push('閉じ引用符の位置が正しくありません');
+/* 簡易式評価 */
+function evalExpr(expr,vars){
+  expr=expr.trim();
+  if((expr.startsWith('"')&&expr.endsWith('"'))||(expr.startsWith("'")&&expr.endsWith("'"))){
+    return expr.slice(1,-1).replace(/\\n/g,'\n').replace(/\\t/g,'\t');
   }
-
-  if(errors.length===0){
-    errors.push('print文の構文が正しくありません');
+  if(/^-?\d+$/.test(expr)) return parseInt(expr);
+  if(/^-?\d+\.\d+$/.test(expr)) return parseFloat(expr);
+  if(expr==='True') return true;
+  if(expr==='False') return false;
+  if(expr==='None') return null;
+  if(expr.startsWith('[')&&expr.endsWith(']')){
+    const inner=expr.slice(1,-1).trim();
+    if(!inner) return [];
+    return splitPrintArgs(inner).map(a=>evalExpr(a.trim(),vars));
   }
+  if(expr.match(/^f["']/)){
+    const q=expr[1];
+    const body=expr.slice(2,-1);
+    return body.replace(/\{([^}]+)\}/g,(_,e)=>printVal(evalExpr(e.trim(),vars)));
+  }
+  if(expr.includes('+')){
+    const parts=splitByPlus(expr);
+    if(parts.length>1){
+      const vals=parts.map(p=>evalExpr(p.trim(),vars));
+      if(vals.every(v=>typeof v==='string')) return vals.join('');
+      if(vals.every(v=>typeof v==='number')) return vals.reduce((a,b)=>a+b,0);
+      throw {message:'型エラー — + 演算子に対応していない型の組み合わせです'};
+    }
+  }
+  const arithMatch=expr.match(/^(.+?)\s*([\+\-\*\/\%]|\*\*|\/\/)\s*(.+)$/);
+  if(arithMatch){
+    const l=evalExpr(arithMatch[1],vars);
+    const op=arithMatch[2];
+    const r=evalExpr(arithMatch[3],vars);
+    if(typeof l==='number'&&typeof r==='number'){
+      if(op==='+') return l+r;
+      if(op==='-') return l-r;
+      if(op==='*') return l*r;
+      if(op==='/') return r===0?(()=>{throw {message:'ゼロ除算エラー — 0で割ることはできません'}})():l/r;
+      if(op==='//') return Math.floor(l/r);
+      if(op==='%') return l%r;
+      if(op==='**') return Math.pow(l,r);
+    }
+    if(op==='*'&&typeof l==='string'&&typeof r==='number') return l.repeat(r);
+    if(op==='*'&&typeof r==='string'&&typeof l==='number') return r.repeat(l);
+  }
+  if(/^[a-zA-Z_]\w*$/.test(expr)){
+    if(expr in vars) return vars[expr];
+    throw {message:`名前エラー — '${expr}' は定義されていません`};
+  }
+  const convMatch=expr.match(/^(int|str|float)\s*\((.+)\)$/);
+  if(convMatch){
+    const val=evalExpr(convMatch[2],vars);
+    if(convMatch[1]==='int') return parseInt(val)||0;
+    if(convMatch[1]==='str') return String(val);
+    if(convMatch[1]==='float') return parseFloat(val)||0.0;
+  }
+  const lenM=expr.match(/^len\s*\((.+)\)$/);
+  if(lenM){
+    const val=evalExpr(lenM[1],vars);
+    if(typeof val==='string'||Array.isArray(val)) return val.length;
+    throw {message:'型エラー — このオブジェクトには len() を使えません'};
+  }
+  return expr;
+}
 
-  const msg='SyntaxError: '+errors.join(' / ');
-  return {ok:false, msg, fix:correctCode, errors};
+/* +で分割（文字列内は無視） */
+function splitByPlus(s){
+  const parts=[];let cur='';let inStr=false;let q='';let depth=0;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(inStr){cur+=c;if(c===q&&s[i-1]!=='\\')inStr=false;}
+    else if(c==='"'||c==="'"){inStr=true;q=c;cur+=c;}
+    else if(c==='('){depth++;cur+=c;}
+    else if(c===')'){depth--;cur+=c;}
+    else if(c==='+'&&depth===0){parts.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  if(cur.trim())parts.push(cur);
+  return parts.length>1?parts:[s];
+}
+
+/* 表示用変換 */
+function printVal(v){
+  if(v===null) return 'None';
+  if(v===true) return 'True';
+  if(v===false) return 'False';
+  if(Array.isArray(v)) return '['+v.map(x=>typeof x==='string'?"'"+x+"'":printVal(x)).join(', ')+']';
+  return String(v);
 }
 
 function showCodeError(msg){
@@ -848,33 +1249,38 @@ function hideCodeError(){
 function updateOutput(text){
   document.querySelector('#pResult .out-hd').innerHTML=`<div class="out-dot" style="background:#22c55e;"></div><div class="out-lbl">実行完了</div>`;
   const ot=document.getElementById('outTxt');
-  ot.innerHTML=`<span style="color:#3a8050;">${text}</span>`;
+  const escaped=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  ot.innerHTML=`<span style="color:#3a8050;">${escaped}</span>`;
   ot.style.fontStyle='normal';
 }
 
 function runCode(){
   if(!hasCode){
     const m=document.getElementById('chatMsgs');
-    m.innerHTML+=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">まずはスライドのコードをクリックするか、コードをリクエストしてみてください！</div></div>`;
+    m.innerHTML+=`<div class="msg"><div class="ava av-ai">AI</div><div class="b-ai bub">まずはコードをクリックするか、コードをリクエストしてみてください！</div></div>`;
     m.scrollTop=9999;return;
   }
-  const curCode=document.getElementById('pCode').textContent.trim();
-  const result=checkCode(curCode);
+  const curCode=document.getElementById('pCode').innerText.trim();
+  const result=simulatePython(curCode);
   if(!result.ok){
+    if(result.output) updateOutput(result.output);
     showCodeError(result.msg);
     switchTab('Code');
     return;
   }
   hideCodeError();
-  const rm=curCode.match(/print\(["'](.+?)["']\)/);
-  updateOutput(rm?rm[1]:curCode);
+  if(result.output){
+    updateOutput(result.output);
+  } else {
+    updateOutput('(出力なし)');
+  }
   switchTab('Result');
   setTimeout(()=>{
-    showMentor({msg:'🎉 実行成功！ <strong>Hello, AI Agent!</strong> が出力されました。<br>メッセージを直接変えてみましょうか？',cta:'修正してみます',act:'modify'});
+    const firstLine=result.output.split('\n')[0]||'';
+    showMentor({msg:`🎉 実行成功！ <strong>${firstLine}</strong> が出力されました。<br>コードを変更して試してみましょうか？`,cta:'修正してみます',act:'modify'});
     document.getElementById('msCTA').onclick=()=>{
       hideMentor();
       si('出力メッセージを「こんにちは、AIの世界！」に変えて');
-      document.getElementById('chatTA').focus();
     };
   },1000);
 }
@@ -895,6 +1301,84 @@ function insertCode(){
 function insertPrompt(){
   si('このコードを実行するとどうなる？');
 }
+
+/* ── ラインヒント（コード行ホバーで一行解説） ── */
+function getLineHint(line){
+  line=line.trim();
+  if(!line) return '';
+  if(line.startsWith('#')) return 'コメント行 — プログラムには影響しないメモです';
+  if(line.match(/^print\s*\(/)) {
+    const m=line.match(/print\s*\(\s*["'](.+?)["']\s*\)/);
+    return m ? `画面に「${m[1]}」と出力します` : '括弧内の値を画面に出力します';
+  }
+  if(line.match(/^[a-zA-Z_]\w*\s*=\s*/)){
+    const m=line.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
+    return m ? `変数 ${m[1]} に ${m[2]} を代入します` : '変数に値を代入します';
+  }
+  if(line.startsWith('def ')) return '新しい関数を定義します';
+  if(line.startsWith('if ')) return '条件を判定して処理を分岐します';
+  if(line.startsWith('for ')) return '繰り返し処理（ループ）を実行します';
+  if(line.startsWith('while ')) return '条件が真の間、繰り返します';
+  if(line.startsWith('return ')) return '関数の結果を返します';
+  if(line.startsWith('import ')) return '外部モジュールを読み込みます';
+  if(line.match(/^(tasks|fruits|items)\s*\.append/)) return 'リストに要素を追加します';
+  return 'Pythonの処理文です';
+}
+
+function setupLineHints(){
+  const codeArea=document.getElementById('pCode');
+  const text=codeArea.innerText;
+  const lines=text.split('\n');
+  const hintPanel=document.getElementById('hintBody');
+
+  /* ラインヒントパネルを更新 */
+  let hintHtml='';
+  lines.forEach((line,i)=>{
+    if(!line.trim()) return;
+    const hint=getLineHint(line);
+    hintHtml+=`<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:6px;padding:4px 6px;background:#0d1322;border:1px solid #1a2540;border-radius:5px;">
+      <span style="color:#2a3a50;font-size:8px;font-weight:700;min-width:14px;text-align:right;">${i+1}</span>
+      <code style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#6ee7b7;white-space:nowrap;">${line.trim().replace(/</g,'&lt;')}</code>
+      <span style="color:#5a6a88;font-size:8px;margin-left:auto;white-space:nowrap;">→ ${hint}</span>
+    </div>`;
+  });
+  if(!hintHtml) hintHtml='<div style="color:#5a6a88;font-size:9px;text-align:center;padding:16px 0;font-style:italic;">全コードの各行にマウスを当てると<br>AIがその行の意味を一行で解説します</div>';
+  hintPanel.innerHTML=hintHtml;
+
+  /* ホバー時のツールチップ */
+  codeArea.addEventListener('mousemove', handleCodeHover);
+  codeArea.addEventListener('mouseleave', hideLineHint);
+}
+
+function handleCodeHover(e){
+  const codeArea=document.getElementById('pCode');
+  const text=codeArea.innerText;
+  const lines=text.split('\n');
+
+  /* マウスY位置からおおよその行を推定 */
+  const rect=codeArea.getBoundingClientRect();
+  const lineHeight=parseFloat(getComputedStyle(codeArea).lineHeight)||19;
+  const scrollTop=codeArea.scrollTop;
+  const relY=e.clientY - rect.top + scrollTop - 16;
+  const lineIdx=Math.floor(relY / lineHeight);
+
+  if(lineIdx>=0 && lineIdx<lines.length && lines[lineIdx].trim()){
+    const hint=getLineHint(lines[lineIdx]);
+    const tooltip=document.getElementById('lineHint');
+    tooltip.textContent=hint;
+    tooltip.style.left=(e.clientX+12)+'px';
+    tooltip.style.top=(e.clientY-28)+'px';
+    tooltip.classList.add('show');
+  } else {
+    hideLineHint();
+  }
+}
+
+function hideLineHint(){
+  document.getElementById('lineHint').classList.remove('show');
+}
+
+window.addEventListener('resize',()=>{if(bubbleOpen)positionBubble();});
 </script>
 </body>
 </html>
